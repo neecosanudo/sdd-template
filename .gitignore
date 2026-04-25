@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+vendor/
+.env
+.env.local
+
+# Build artifacts
+dist/
+build/
+target/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# IDE
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
