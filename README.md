@@ -1,22 +1,114 @@
 # sdd-template
 
-Repository template for starting new projects with high engineering quality and LLM/SDD compatibility.
-
-## 🗺 Navigation
-
-- **`.atl/governance/`** — Working rules: Manifesto, Commits, Contributing, Versioning.
-- **`.atl/standards/`** — Style, Testing, Security, Release, CI/CD.
-- **`.atl/patterns/`** — Language-agnostic engineering patterns (Memory alignment, Security-by-design).
-- **`.atl/specs/`** — SDD specs for navigation and governance.
-- **`docs/`** — Product-specific documentation (architecture, ADRs).
-
-> For LLM navigation, read `.atl/specs/navigation.spec.md` first.
+> **What is this?** A repository template that guides you from the FIRST client conversation all the way to shipped software. It is BOTH a **project discovery tool** (for defining scope with your client) AND a **Spec-Driven Development (SDD) framework** (for building the right thing, right).
 
 ## 🚀 Getting Started
 
-1. Fork or clone this template.
-2. Define your product's ADRs in `docs/adr/`.
-3. Follow the rules in `.atl/governance/ENGINEERING_MANIFEST.md`.
+### 1. Download the Template
+
+```bash
+# Clone the template
+git clone https://github.com/your-org/sdd-template.git my-new-project
+cd my-new-project
+
+# Reset git history (this is YOUR project now)
+rm -rf .git
+git init
+git add .
+git commit -m "🎉 init: initial commit from sdd-template"
+
+# Initialize SDD in your project
+# (Follow your SDD tooling instructions)
+```
+
+### 2. Start With Discovery (NOT Code)
+
+**This is the most important step.** Before writing any code, you must understand the problem WITH your client.
+
+#### What to Discuss
+
+- **Project Goals**: What does success look like? What problem are we solving?
+- **Scope & Boundaries**: What is IN scope? What is explicitly OUT of scope?
+- **Stakeholders**: Who are the users? Who are the decision-makers?
+- **User Personas**: Who will use this? What are their needs and pain points?
+- **Functional Requirements**: What must the system DO? (features, behaviors, workflows)
+- **Non-Functional Requirements**: How must the system perform? (speed, security, scale, accessibility)
+- **Constraints**: Budget, timeline, technology preferences, regulatory requirements
+- **Success Metrics**: How will we know this worked?
+
+#### What to Document
+
+Capture everything in:
+- `Bitacora.md` — ongoing conversation log with your agent
+- `docs/adr/` — significant architecture decisions (created during SDD)
+- User stories or requirements documents (your preferred format)
+
+#### When You're Done
+
+Discovery is done when:
+- [ ] Scope is agreed upon (in writing)
+- [ ] Requirements are documented
+- [ ] User stories exist for the first milestone
+- [ ] Stakeholders have reviewed and approved
+
+### 3. Enter the SDD Cycle
+
+Once discovery is complete, use the SDD framework to build:
+
+```
+Explore → Propose → Spec → Design → Tasks → Apply → Verify (until OK) → Archive
+```
+
+For the operational details of this cycle — entry/exit criteria, responsibilities, and the "verify until OK" iteration rule — read:
+
+📄 **`.atl/standards/WORKING_STANDARD.md`**
+
+### 4. Handoff to Programmers and Designers
+
+When discovery and initial design are complete, pass these to your team:
+
+| Deliverable | Location | For Whom |
+|-------------|----------|----------|
+| Requirements & User Stories | `Bitacora.md` + your docs | Everyone |
+| Architecture Decisions | `docs/adr/` | Architects, Tech Leads |
+| Design Documents | `docs/design/` or `openspec/` | Programmers |
+| UI/UX Direction | Your design files | Designers |
+| Standards & Patterns | `.atl/standards/`, `.atl/patterns/` | Everyone |
+
+**Tip**: The `Bitacora.md` is your team's best friend — it contains the "why" behind every decision.
+
+---
+
+## 🗺 Repository Navigation
+
+This template organizes knowledge into `.atl/` (project infrastructure) and `docs/` (product-specific documentation):
+
+- **`.atl/governance/`** — Working rules: Manifesto, Commits, Contributing, Versioning.
+- **`.atl/standards/`** — Style, Testing, Security, Release, CI/CD, **Working Standard**.
+- **`.atl/patterns/`** — Language-agnostic engineering patterns (Memory alignment, Security-by-design).
+- **`.atl/agent/`** — Agent behavior rules (delegation, skills, manual write review).
+- **`.atl/decisions/`** — Decision log for architectural and engineering decisions.
+- **`.atl/meta/`** — Cross-project learnings and meta-infrastructure (`LEARNINGS_MAP.md`).
+- **`.atl/specs/`** — SDD specs for navigation and governance.
+- **`docs/`** — Product-specific documentation (architecture, ADRs).
+- **`Bitacora.md`** — Ongoing conversation history between user and agent.
+
+> For LLM navigation, read `.atl/specs/navigation.spec.md` first.
+
+---
+
+## 🧠 Why This Template?
+
+Most projects fail not because of bad code, but because of **bad understanding**. This template forces you to:
+
+1. **Understand before building** (Discovery)
+2. **Specify before coding** (SDD)
+3. **Verify before shipping** (Verify until OK)
+4. **Learn across projects** (`LEARNINGS_MAP.md`)
+
+It is not just a folder structure. It is a **discipline**.
+
+---
 
 ## ⚖ License
 
