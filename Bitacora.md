@@ -2,6 +2,8 @@
 
 > **Purpose**: Capture the ongoing dialogue between you (the user) and the AI agent. This is the *informal* history of your collaboration — decisions made, context shared, motivations explained.
 >
+> **Why at root?** `Bitacora.md` lives at the repository root for immediate visibility as the conversation log. This is intentional — see `.atl/specs/navigation.spec.md` for the governance rationale.
+>
 > **Difference from DECISION_LOG.md**: `DECISION_LOG.md` records formal architectural decisions with full rationale and consequences. `Bitacora.md` captures the *conversation* — the back-and-forth that led to those decisions. When a Bitacora entry becomes significant enough, it SHOULD be promoted to `DECISION_LOG.md`.
 
 ## How to Use This File

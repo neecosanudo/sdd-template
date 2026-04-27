@@ -54,6 +54,7 @@ Review this file:
 - **Source Project:** TBD
 - **Files:** TBD
 - **Template Impact:** TBD
+- **Template Files:** (e.g., `README.md`, `WORKING_STANDARD.md`, `ENGINEERING_MANIFEST.md`)
 - **Status:** identified
 
 ---

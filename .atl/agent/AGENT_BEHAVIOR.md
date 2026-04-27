@@ -27,6 +27,7 @@ This document defines how AI agents must operate within this project. These rule
 | Go tests, Bubbletea TUI testing | `go-testing` |
 | Creating new AI skills | `skill-creator` |
 | Spec-driven development phases | Phase-specific SDD skill |
+| Discovery/analysis phase guidance | Working standard (Analysis phase in `.atl/standards/WORKING_STANDARD.md`) |
 
 ## 3. Manual Write Review
 

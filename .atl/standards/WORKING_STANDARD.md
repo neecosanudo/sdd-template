@@ -41,7 +41,7 @@ Analysis → Design → Tasks → Apply → Verify (until OK) → Archive
 
 ### Responsibility
 - **Primary**: User (with client)
-- **Support**: Agent can facilitate with questions and templates
+- **Support**: Agent can facilitate with questions and templates (see `.atl/agent/AGENT_BEHAVIOR.md` for discovery phase awareness)
 
 ### Output
 - `docs/` or `Bitacora.md` — analysis notes, user stories, requirements

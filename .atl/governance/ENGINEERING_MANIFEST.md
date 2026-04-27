@@ -50,5 +50,13 @@ This document defines the "operating system" of this project. Every LLM, agent, 
     2. Document a new pattern in `.atl/patterns/` before implementing
 *   **No improvisation:** Do not implement without checking known patterns first. Reinventing patterns wastes effort and introduces inconsistency.
 
+## 8. Discovery-First Rule
+
+*   **Phase Order:** The Discovery/Analysis phase MUST precede any SDD cycle. No Explore, Propose, or Spec work begins without documented scope agreement.
+*   **Client Dialogue:** Discovery is conducted WITH the client. Requirements, user personas, constraints, and success metrics MUST be captured in writing.
+*   **Gate:** If no Discovery output exists (scope, requirements, stories), the first task of any engagement is to produce it.
+*   **Documentation:** Discovery outputs go in `docs/` or `Bitacora.md`. The `Bitacora.md` captures the conversation; formal requirements live in project docs.
+
 ---
+
 *This manifesto is the project's law. When in doubt, re-read it.*

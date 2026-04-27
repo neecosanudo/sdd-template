@@ -46,6 +46,8 @@ This directory contains deep engineering concepts that apply across all projects
 
 ## 🔄 Spec-Driven Development (SDD) Cycle
 
+> **Canonical reference**: For the complete working standard cycle with entry/exit criteria and the "verify until OK" iteration rule, see [`.atl/standards/WORKING_STANDARD.md`](../standards/WORKING_STANDARD.md).
+
 ### SDD Phase Sequence
 1.  **Verify:** Understand current state and constraints.
 2.  **Design:** Document architecture and approach.
