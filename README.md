@@ -116,6 +116,56 @@ See **[`docs/EXISTING_PROJECTS.md`](docs/EXISTING_PROJECTS.md)** for:
 - Migration priority order
 - Common pitfalls when retrofitting
 
+### Quick Start — Copy & Paste Prompt for OpenCode
+
+Want to adopt this framework in your existing project? Copy and paste the prompt below into your OpenCode agent:
+
+```
+I want to adopt the SDD Template framework in my existing project. Follow these steps:
+
+1. Download the framework code from https://github.com/neecosanudo/sdd-template
+2. Analyze the downloaded template structure, especially:
+   - .atl/governance/ (working rules and manifesto)
+   - .atl/standards/ (style, testing, security, working standard)
+   - .atl/patterns/ (engineering patterns)
+   - .atl/agent/ (agent behavior rules)
+   - .atl/decisions/ (decision log)
+   - .atl/specs/ (SDD specs)
+   - docs/EXISTING_PROJECTS.md (migration guide)
+
+3. CRITICAL: Each phase below MUST be executed as a FULL SDD cycle following the framework's standard:
+   Explore → Propose → Spec → Design → Tasks → Apply → Verify (until OK) → Archive
+   
+   You MUST follow the instructions in .atl/standards/WORKING_STANDARD.md and act as an SDD orchestrator.
+   Do NOT improvise or skip steps. Use the framework's governance and standards as the single source of truth.
+
+PHASE 1 — Documentation Migration (NO code changes):
+- Run a complete SDD cycle to migrate documentation only
+- Read my existing project docs (README, docs/, wiki, notes)
+- Map existing docs to the template structure
+- Create missing template files from defaults
+- Migrate existing content to template structure
+- Create Bitacora.md at project root
+- Create docs/LEARNINGS_MAP.md (transversal learnings only)
+- Update README.md to reference template structure
+- Do NOT modify any source code
+- Do NOT delete existing files
+- Verify until OK before archiving this phase
+
+PHASE 2 — Compliance Analysis (AFTER documentation is complete and I confirm):
+- Run a complete SDD cycle to analyze compliance
+- As orchestrator, systematically scan the entire codebase against:
+  * .atl/governance/ENGINEERING_MANIFEST.md
+  * .atl/standards/ (all standards files)
+  * .atl/patterns/ (applicable patterns)
+- For every deviation found, document it with severity and proposed fix
+- Provide a prioritized report of all corrections needed
+- Do NOT make any code changes yet — only analyze and report
+- Verify until OK before archiving this phase
+
+Execute PHASE 1 first. Only proceed to PHASE 2 after I explicitly confirm the documentation migration is complete.
+```
+
 ---
 
 ## 🔄 SDD Cycle
