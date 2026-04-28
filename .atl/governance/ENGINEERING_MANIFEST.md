@@ -57,6 +57,23 @@ This document defines the "operating system" of this project. Every LLM, agent, 
 *   **Gate:** If no Discovery output exists (scope, requirements, stories), the first task of any engagement is to produce it.
 *   **Documentation:** Discovery outputs go in `docs/` or `Bitacora.md`. The `Bitacora.md` captures the conversation; formal requirements live in project docs.
 
+## 9. Stack Decision → Pattern Documentation
+
+*   **Rule:** Every stack or tool selection (language, framework, library, CI/CD platform) MUST produce a corresponding pattern file in `.atl/patterns/`.
+*   **Rationale:** Tool choices without documented patterns become tribal knowledge. Patterns make tool decisions transferable and reviewable.
+*   **Process:** When adopting a new tool, create or extend a pattern file in `.atl/patterns/` that covers:
+    1. Why this tool was chosen (decision context)
+    2. How to use it correctly (usage pattern)
+    3. Common pitfalls and how to avoid them
+*   **Exception:** Trivial tool choices (e.g., choosing `jq` over `awk`) do not require a pattern. Use judgment.
+
+## 10. Default Execution Mode
+
+*   **Persistence:** `hybrid` — progress persists to both Engram and openspec (filesystem)
+*   **Flow:** `interactive` — SDD phases pause between stages for user confirmation
+*   **Task Execution:** `synchronous` — tasks execute sequentially; no background delegation; user sees real-time progress
+*   **Override:** These defaults apply unless the user explicitly requests a different mode (e.g., `async`, `engram-only`, etc.)
+
 ---
 
 *This manifesto is the project's law. When in doubt, re-read it.*

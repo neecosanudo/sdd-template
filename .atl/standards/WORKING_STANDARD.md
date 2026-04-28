@@ -32,6 +32,7 @@ Analysis → Design → Tasks → Apply → Verify (until OK) → Archive
 - Identify stakeholders and user personas
 - Create user stories or use cases
 - Document constraints (budget, timeline, technology)
+- Document tool-specific patterns in `.atl/patterns/` when tools are selected
 
 ### Exit Criteria
 - [ ] Scope is documented and agreed upon
@@ -232,6 +233,8 @@ Still fails? Repeat until clean.
 3. **Tasks before Apply**: Never code without knowing what you're building.
 4. **Verify before Archive**: Never close a change without validation.
 5. **Iterate until clean**: One failed verify is not a failure — it's feedback. Fix and re-verify.
+
+**Synchronous Execution**: All SDD phases execute synchronously unless the user explicitly requests async. Tasks run sequentially — no background delegation, user sees progress in real-time.
 
 ---
 

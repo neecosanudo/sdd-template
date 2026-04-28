@@ -70,6 +70,49 @@ Capture everything in:
 
 ---
 
+## 📋 LEARNINGS_MAP.md — Per-Project, Not Template
+
+`LEARNINGS_MAP.md` tracks cross-project learnings and meta-infrastructure. It lives in the `docs/` folder of each project, **not in the template itself**.
+
+- **Template**: Contains shared infrastructure (`.atl/governance/`, `.atl/standards/`, etc.)
+- **Per-project**: `docs/LEARNINGS_MAP.md` captures learnings specific to each project
+
+This separation ensures the template stays generic while projects accumulate their own institutional knowledge.
+
+---
+
+## ⚙️ Default Modes
+
+This template enforces three behavioral modes:
+
+| Mode | Value | Description |
+|------|-------|-------------|
+| **Persistence** | `hybrid` | Progress persists to both Engram (persistent memory) and openspec (filesystem) |
+| **Execution** | `interactive` | SDD phases pause between stages for user confirmation |
+| **Tasks** | `synchronous` | Tasks execute sequentially — no background delegation; user sees progress in real-time |
+
+These are **enforced defaults**, not suggestions. Override only when explicitly requested by the user.
+
+---
+
+## 🤝 Contributing to This Template
+
+See **[`CONTRIBUTING.md`](CONTRIBUTING.md)** for:
+- How to propose new patterns for the template
+- How to suggest improvements via GitHub issues/PRs
+- How to share learnings from your project
+
+---
+
+## 🚀 Applying Template to Existing Projects
+
+See **[`docs/EXISTING_PROJECTS.md`](docs/EXISTING_PROJECTS.md)** for:
+- Assessment checklist (what's missing, what's good)
+- Migration priority order
+- Common pitfalls when retrofitting
+
+---
+
 ## 🔄 SDD Cycle
 
 Once discovery is complete, use the SDD framework to build:
@@ -121,7 +164,6 @@ For LLM navigation, read `.atl/specs/navigation.spec.md` first.
 | `.atl/patterns/` | Language-agnostic engineering patterns |
 | `.atl/agent/` | Agent behavior rules (delegation, skills, manual write review) |
 | `.atl/decisions/` | Decision log for architectural and engineering decisions |
-| `.atl/meta/` | Cross-project learnings and meta-infrastructure (`LEARNINGS_MAP.md`) |
 | `.atl/specs/` | SDD specs for navigation and governance |
 
 ### Root Files
@@ -141,7 +183,7 @@ Most projects fail not because of bad code, but because of **bad understanding**
 1. **Understand before building** (Discovery — Rule #8)
 2. **Specify before coding** (SDD)
 3. **Verify before shipping** (Verify until OK)
-4. **Learn across projects** ([`.atl/meta/LEARNINGS_MAP.md`](.atl/meta/LEARNINGS_MAP.md))
+4. **Learn across projects** (`docs/LEARNINGS_MAP.md` — created per-project, not in template)
 
 It is not just a folder structure. It is a **discipline**.
 

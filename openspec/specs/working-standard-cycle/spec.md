@@ -30,6 +30,18 @@ The Analysis phase MUST be positioned as the FIRST phase, before Design.
 - AND it SHALL state that Analysis includes: scope definition, requirements gathering, user story creation, stakeholder identification
 - AND it SHALL state that Analysis is done WITH the client
 
+### Requirement: Tool Pattern Documentation
+
+The Analysis phase MUST include immediate documentation of tool-specific patterns.
+
+#### Scenario: User selects a tool during Analysis
+
+- GIVEN a tool or framework is selected during the Analysis phase
+- WHEN the selection is made
+- THEN patterns specific to that tool MUST be documented in `.atl/patterns/` immediately
+- AND those patterns SHALL include: security considerations, performance considerations, known gotchas
+- AND the documentation SHALL happen BEFORE proceeding to Design phase
+
 ### Requirement: Verify Iteration Rule
 
 The Verify phase MUST document the "until OK" iteration rule.
@@ -41,6 +53,19 @@ The Verify phase MUST document the "until OK" iteration rule.
 - THEN they SHALL see that verification is NOT a one-time gate
 - AND they SHALL see the rule: "if verify fails → return to appropriate phase (tasks, apply, or design) → re-verify"
 - AND they SHALL see that the cycle repeats until verification passes cleanly
+
+### Requirement: Synchronous Execution
+
+The working standard MUST specify that SDD phases execute synchronously by default.
+
+#### Scenario: User expects to see progress in real-time
+
+- GIVEN the user is running an SDD cycle
+- WHEN phases execute
+- THEN they SHALL execute synchronously (one after another, visible in real-time)
+- AND asynchronous execution SHALL only occur if the user explicitly requests it
+- AND the default persistence mode SHALL be hybrid (engram + openspec)
+- AND the default interaction mode SHALL be interactive (pause between phases)
 
 ### Requirement: SDD Integration
 
@@ -67,3 +92,4 @@ The README.md MUST reference the working standard.
 ## References
 - `.atl/standards/WORKING_STANDARD.md` — full cycle documentation
 - `README.md` — high-level reference to the cycle
+- `.atl/governance/ENGINEERING_MANIFEST.md` — Rule 9 (Stack Decision → Patterns), Rule 10 (Default Execution Mode)
