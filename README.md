@@ -79,6 +79,11 @@ Capture everything in:
 
 This separation ensures the template stays generic while projects accumulate their own institutional knowledge.
 
+**Scope**: LEARNINGS_MAP is for TRANSVERSAL learnings only.
+- ✅ Tool choices, memory alignment patterns, architectural approaches that recur across projects
+- ❌ Project-specific decisions → Bitacora.md
+- ❌ Framework gotchas → `.atl/patterns/{tool}.md`
+
 ---
 
 ## ⚙️ Default Modes

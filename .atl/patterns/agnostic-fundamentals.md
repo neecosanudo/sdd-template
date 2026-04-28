@@ -4,6 +4,8 @@ This directory contains deep engineering concepts that apply across all projects
 
 > **How to use these patterns:** These are not rigid rules. They are documented "gotchas" and best practices discovered through experience. If you find a new pattern that improves efficiency, safety, or maintainability, add it here.
 
+> **Framework-specific gotchas:** Language or framework-specific patterns (Go structs, Svelte reactivity, React hooks) belong in `.atl/patterns/{tool}.md`, not in this file.
+
 ## 💾 Memory & Performance
 
 ### 1. Memory Alignment & Padding

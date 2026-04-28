@@ -222,7 +222,21 @@ Still fails? Repeat until clean.
 | Verify | Verify | Direct mapping |
 | Archive | Archive | Direct mapping |
 
-**Key insight**: SDD formalizes the Analysis phase into Explore, Propose, and Spec. In practice, these often blend together. The Working Standard treats Analysis as the umbrella; SDD provides the sub-structure.
+**Key insight**: SDD formalizes the Analysis phase into Explore, Propose, and Spec. Each SDD phase is executed by a **dedicated agent** — phases MUST NOT be combined or blended. The orchestrator launches one phase agent at a time, sequentially.
+
+**Phase-Agent Mapping**:
+| SDD Phase | Agent | Responsibility |
+|-----------|-------|----------------|
+| Explore | `sdd-explore-general-dev-lc` | Investigate, gather context |
+| Propose | `sdd-propose-general-dev-lc` | Define intent, scope, approach |
+| Spec | `sdd-spec-general-dev-lc` | Write requirements, scenarios |
+| Design | `sdd-design-general-dev-lc` | Architecture decisions, approach |
+| Tasks | `sdd-tasks-general-dev-lc` | Break down implementation |
+| Apply | `sdd-apply-general-dev-lc` | Implement changes |
+| Verify | `sdd-verify-general-dev-lc` | Validate against specs |
+| Archive | `sdd-archive-general-dev-lc` | Close and persist |
+
+**Rule**: The orchestrator MUST launch one phase agent per phase. Combining multiple phases into a single agent launch is prohibited.
 
 ---
 
