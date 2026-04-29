@@ -1,6 +1,6 @@
 # Swagger / OpenAPI — Documentación de APIs
 
-**Versión swag**: v1.16.6
+**Versión**: Ver [STACK_MAP.md](../STACK_MAP.md)
 **UI**: http-swagger v2 (Swagger UI embebida)
 **Enfoque**: API First — Spec escrita ANTES de implementar
 **Referencias**: [STACK_MAP.md](../STACK_MAP.md) | [go.md](go.md) | [api-first.md](../decisions/api-first.md) | [testing.md](testing.md)

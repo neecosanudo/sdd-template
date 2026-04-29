@@ -1,6 +1,6 @@
 # JWT Auth — Autenticación con Tokens
 
-**Versiones**: golang-jwt/jwt/v5 v5.3.1, golang.org/x/crypto v0.50.0
+**Versión**: Ver [STACK_MAP.md](../STACK_MAP.md)
 **Tipo**: Access Token (15min) + Refresh Token (7d) con rotation
 **Referencias**: [STACK_MAP.md](../STACK_MAP.md) | [go.md](go.md) | [testing.md](testing.md)
 

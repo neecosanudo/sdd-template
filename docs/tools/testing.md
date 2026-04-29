@@ -1,8 +1,6 @@
 # Testing — Estrategia de Testing Completa
 
-**Backend**: Go testing (stdlib) + testify v1.8.4
-**Frontend Unit**: Vitest ^2.0.0
-**Frontend E2E**: Playwright 1.50.1
+**Versión**: Ver [STACK_MAP.md](../STACK_MAP.md)
 **Referencias**: [STACK_MAP.md](../STACK_MAP.md) | [go.md](go.md) | [TESTING_STRATEGY.md](../../.atl/standards/TESTING_STRATEGY.md)
 
 ---

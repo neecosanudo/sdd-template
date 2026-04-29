@@ -1,6 +1,6 @@
 # Docker — Contenedores y Orquestación
 
-**Imágenes Base**: alpine:3.21, golang:1.25-alpine3.21, oven/bun:1-alpine
+**Imágenes Base**: Ver [STACK_MAP.md](../STACK_MAP.md)
 **Orquestación**: docker-compose
 **Referencias**: [STACK_MAP.md](../STACK_MAP.md) | [docker-multistage.md](../../.atl/patterns/docker-multistage.md) | [postgresql.md](postgresql.md)
 

@@ -1,6 +1,6 @@
 # GORM — Object-Relational Mapping
 
-**Versión**: GORM v1.31.1
+**Versión**: Ver [STACK_MAP.md](../STACK_MAP.md)
 **Driver PostgreSQL**: gorm.io/driver/postgres v1.6.0
 **Driver SQLite**: gorm.io/driver/sqlite v1.6.0
 **Referencias**: [STACK_MAP.md](../STACK_MAP.md) | [go.md](go.md) | [postgresql.md](postgresql.md) | [sqlite.md](sqlite.md) | [gorm-repository.md](../../.atl/patterns/gorm-repository.md) | [docker.md](docker.md)

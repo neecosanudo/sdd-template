@@ -18,21 +18,7 @@
 
 ## 🚀 Stack del Proyecto
 
-| Categoría | Herramienta | Versión |
-|-----------|-------------|---------|
-| **Backend** | Go + GORM | 1.25.0 + v1.31.1 |
-| **Frontend Principal** | SvelteKit | 2.0.0 |
-| **Frontend Prototipos** | React | 19.0.0 |
-| **Styling** | TailwindCSS | 3.4.1 (SvelteKit) / 4.1.14 (React) |
-| **Auth** | JWT (golang-jwt/v5) + bcrypt | v5.3.1 + v0.50.0 |
-| **DevOps** | Docker + docker-compose | multi-stage |
-| **Database** | PostgreSQL + SQLite (dev) | 16-alpine |
-| **Testing** | Go test + Vitest + Playwright | v1.8.4 + ^2.0.0 + 1.50.1 |
-| **Metodología** | SDD/TDD | Mandatorio |
-
-### Stack Map
-
-📄 **[docs/STACK_MAP.md](docs/STACK_MAP.md)** — Versiones exactas y matriz de compatibilidad
+El stack completo con versiones exactas y matriz de compatibilidad está en **[docs/STACK_MAP.md](docs/STACK_MAP.md)**.
 
 ---
 

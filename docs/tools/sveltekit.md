@@ -1,6 +1,6 @@
 # SvelteKit — Framework Frontend Principal
 
-**Versión**: SvelteKit 2.0.0
+**Versión**: Ver [STACK_MAP.md](../STACK_MAP.md)
 **Dependencias**: Svelte 4.2.0, TypeScript 5.3.3, Vite 5.0.3, TailwindCSS 3.4.1
 **Referencias**: [STACK_MAP.md](../STACK_MAP.md) | [tailwindcss.md](tailwindcss.md) | [svelte-component.md](../../.atl/patterns/svelte-component.md) | [testing.md](testing.md)
 

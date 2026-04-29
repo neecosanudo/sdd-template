@@ -1,7 +1,6 @@
 # TailwindCSS — Utility-First CSS
 
-**Versión SvelteKit**: TailwindCSS 3.4.1
-**Versión React**: TailwindCSS 4.1.14 (@tailwindcss/vite plugin)
+**Versión**: Ver [STACK_MAP.md](../STACK_MAP.md)
 **Referencias**: [STACK_MAP.md](../STACK_MAP.md) | [sveltekit.md](sveltekit.md) | [react.md](react.md) | [STYLE_GUIDE.md](../../.atl/standards/STYLE_GUIDE.md)
 
 ---

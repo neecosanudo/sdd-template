@@ -2,7 +2,7 @@
 
 > ⚠️ **ADVERTENCIA CRÍTICA**: React es un stack SECUNDARIO para prototipos rápidos. El framework frontend PRINCIPAL es **SvelteKit** (ver [sveltekit.md](sveltekit.md)). NO usar React en proyectos de producción.
 
-**Versión**: React 19.0.0
+**Versión**: Ver [STACK_MAP.md](../STACK_MAP.md)
 **Bundler**: Vite 6.2.0
 **TypeScript**: ~5.8.2
 **Styling**: TailwindCSS 4.1.14 con @tailwindcss/vite

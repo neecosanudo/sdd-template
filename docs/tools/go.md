@@ -1,6 +1,6 @@
 # Go — Herramienta y Convenciones
 
-**Versión**: Go 1.25.0
+**Versión**: Ver [STACK_MAP.md](../STACK_MAP.md)
 **Herramienta**: `go` (stdlib)
 **Referencias**: [STACK_MAP.md](../STACK_MAP.md) | [testing.md](testing.md) | [jwt-auth.md](jwt-auth.md) | [STYLE_GUIDE.md](../../.atl/standards/STYLE_GUIDE.md)
 

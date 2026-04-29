@@ -1,6 +1,6 @@
 # PostgreSQL — Base de Datos de Producción
 
-**Versión**: PostgreSQL 16-alpine
+**Versión**: Ver [STACK_MAP.md](../STACK_MAP.md)
 **Driver GORM**: gorm.io/driver/postgres v1.6.0
 **Referencias**: [STACK_MAP.md](../STACK_MAP.md) | [gorm.md](gorm.md) | [docker.md](docker.md) | [sqlite.md](sqlite.md)
 

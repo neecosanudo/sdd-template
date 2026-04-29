@@ -2,7 +2,7 @@
 
 > ⚠️ **ADVERTENCIA CRÍTICA**: SQLite es SOLO para desarrollo y testing. **NUNCA** usar en producción. Para producción, ver [postgresql.md](postgresql.md).
 
-**Versión**: SQLite via GORM driver v1.6.0
+**Versión**: Ver [STACK_MAP.md](../STACK_MAP.md)
 **Uso**: Desarrollo local, tests unitarios, CI local
 **Driver**: gorm.io/driver/sqlite
 **Referencias**: [STACK_MAP.md](../STACK_MAP.md) | [gorm.md](gorm.md) | [testing.md](testing.md)

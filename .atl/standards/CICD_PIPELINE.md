@@ -15,7 +15,7 @@ on:
     branches: [main]
 
 env:
-  GO_VERSION: '1.25'
+  GO_VERSION: '1.25'  # see STACK_MAP.md §1
   NODE_VERSION: '22'
 
 jobs:
