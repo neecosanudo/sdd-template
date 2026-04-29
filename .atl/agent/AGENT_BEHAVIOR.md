@@ -56,4 +56,34 @@ This document defines how AI agents must operate within this project. These rule
 
 ---
 
+## 5. Code Migration Protocol
+
+### 5.1 Trigger Condition
+
+When user says **"migrate from X"**, **"bring code from Y"**, or similar — agent MUST:
+
+1. Read `.atl/patterns/code-migration.md` BEFORE any implementation
+2. Follow the 5-step migration process (Analyze → Map → Rewrite → Test First → Verify)
+3. Treat React prototypes as disposable reference (extract logic, discard UI)
+4. Write tests BEFORE implementation (TDD mandatory)
+
+### 5.2 Prohibited Actions
+
+During migration tasks:
+- ❌ **No incremental migration from React prototypes** — React code is reference only, not source
+- ❌ **No copy-paste + syntax adaptation** — must rewrite in destination idioms
+- ❌ **No skipping tests** — TDD is mandatory for migrated business logic
+
+### 5.3 Migration Process Reference
+
+| Step | Action |
+|------|--------|
+| 1. Analyze | Separate business logic from framework plumbing |
+| 2. Map | Use destination mapping tables (§3 in code-migration.md) |
+| 3. Rewrite | Apply `.atl/patterns/` idioms for target stack |
+| 4. Test First | Write failing tests before implementation |
+| 5. Verify | Confirm behavior parity with original |
+
+---
+
 *This document is consumed by AI agents. Human collaborators should refer to `.atl/governance/` for project rules.*
