@@ -63,7 +63,7 @@ This document defines how AI agents must operate within this project. These rule
 When user says **"migrate from X"**, **"bring code from Y"**, or similar — agent MUST:
 
 1. Read `.atl/patterns/code-migration.md` BEFORE any implementation
-2. Follow the 5-step migration process (Analyze → Map → Rewrite → Test First → Verify)
+2. Follow the 6-step SDD-aligned migration process (Analyse → Design → Tasks → Apply → Verify → Archive)
 3. Treat React prototypes as disposable reference (extract logic, discard UI)
 4. Write tests BEFORE implementation (TDD mandatory)
 
@@ -76,13 +76,14 @@ During migration tasks:
 
 ### 5.3 Migration Process Reference
 
-| Step | Action |
-|------|--------|
-| 1. Analyze | Separate business logic from framework plumbing |
-| 2. Map | Use destination mapping tables (§3 in code-migration.md) |
-| 3. Rewrite | Apply `.atl/patterns/` idioms for target stack |
-| 4. Test First | Write failing tests before implementation |
-| 5. Verify | Confirm behavior parity with original |
+| Step | SDD Phase | Action |
+|------|-----------|--------|
+| 1. Analyse | Analyse | Separate business logic from framework plumbing |
+| 2. Design | Design | Map concepts using destination tables (§3 in code-migration.md) |
+| 3. Tasks | Tasks | Break migration into small, sequential tasks |
+| 4. Apply | Apply | Rewrite in destination + TDD (RED → GREEN → REFACTOR) |
+| 5. Verify | Verify | Confirm behavior parity with original |
+| 6. Archive | Archive | Commit with Conventional Commits, document in Bitacora.md |
 
 ---
 

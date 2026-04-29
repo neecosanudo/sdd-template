@@ -22,19 +22,24 @@ El stack tiene tres destinos:
 
 ---
 
-## 2. Proceso de 5 Pasos
+## 2. Proceso de 6 Pasos (Alineado con SDD)
 
-Todo código externo debe pasar por estos 5 pasos antes de integrarse:
+Todo código externo debe pasar por estos 6 pasos. Cada paso mapea 1:1 con una fase del ciclo SDD:
 
-| Paso | Nombre | Descripción |
-|------|--------|-------------|
-| 1 | **Analyze** | Separar lógica de negocio del plumbing (framework code) |
-| 2 | **Map** | Mapear conceptos de origen → idioms del destino usando tablas |
-| 3 | **Rewrite** | Reescribir en destino usando patrones de `.atl/patterns/` |
-| 4 | **Test First** | Escribir tests ANTES de implementar (TDD obligatorio) |
-| 5 | **Verify** | Verificar paridad de comportamiento con el original |
+| Paso | Nombre SDD | Qué hace |
+|------|------------|----------|
+| 1 | **Analyse** | Separar lógica de negocio del plumbing |
+| 2 | **Design** | Mapear conceptos origen → destino |
+| 3 | **Tasks** | Desglosar migración en tareas concretas |
+| 4 | **Apply** | Reescribir en destino + TDD |
+| 5 | **Verify** | Validar paridad de comportamiento |
+| 6 | **Archive** | Cerrar cambio y commitear |
 
-### 2.1 Paso 1: Analyze
+> **Nota**: Las palabras son las mismas que usa el ciclo SDD (`Analyse`, `Design`, `Tasks`, `Apply`, `Verify`, `Archive`). El agente no debe confundir "Analyse" con "Analysis" — en migración usamos la forma verbal para indicar acción.
+
+### 2.1 Paso 1: Analyse
+
+**Fase SDD**: `Analyse`
 
 **Objetivo**: Identificar qué es lógica de negocio y qué es framework plumbing.
 
@@ -45,31 +50,52 @@ Plumbing = código que conecta componentes o maneja framework
 
 **Regla**: Si el código no hace ninguna validación o cálculo de dominio, es plumbing y debe descartarse o reescribirse.
 
-### 2.2 Paso 2: Map
+### 2.2 Paso 2: Design
 
-**Objetivo**: Usar las tablas de mapeo por destino para encontrar equivalentes.
+**Fase SDD**: `Design`
 
-Consultar las tablas en §3 según el destino (Go/SvelteKit/Godot).
+**Objetivo**: Diseñar cómo se verá el código en el destino.
 
-### 2.3 Paso 3: Rewrite
+Usar las tablas de mapeo en §3 según el destino (Go/SvelteKit/Godot). No implementar todavía — solo planificar.
 
-**Objetivo**: Implementar en el destino usando los patrones del proyecto.
+**Output**: Notas de diseño con conceptos mapeados.
 
-Seguir las convenciones documentadas en:
+### 2.3 Paso 3: Tasks
+
+**Fase SDD**: `Tasks`
+
+**Objetivo**: Desglosar la migración en tareas pequeñas y secuenciales.
+
+Ejemplo de desglose:
+- Task 1: Migrar modelos/structs
+- Task 2: Migrar lógica de negocio
+- Task 3: Migrar tests
+- Task 4: Adaptar entry points (handlers, componentes)
+
+**Regla**: Cada task debe caber en una sola sesión.
+
+### 2.4 Paso 4: Apply
+
+**Fase SDD**: `Apply`
+
+**Objetivo**: Implementar el código migrado.
+
+**Dentro de Apply, se ejecuta TDD obligatorio**:
+
+1. **RED**: Escribir test que falla (antes de implementar)
+2. **GREEN**: Implementación mínima para pasar el test
+3. **REFACTOR**: Mejorar sin romper tests
+
+Seguir [TESTING_STRATEGY.md](../standards/TESTING_STRATEGY.md) §6 (Strict TDD).
+
+También seguir las convenciones del destino:
 - [go-hexagonal.md](go-hexagonal.md) — Arquitectura hexagonal
 - [svelte-component.md](svelte-component.md) — Componentes Svelte
 - [gorm-repository.md](gorm-repository.md) — Persistencia GORM
 
-### 2.4 Paso 4: Test First
-
-**Objetivo**: Escribir tests que validen comportamiento ANTES de escribir implementación.
-
-Seguir [TESTING_STRATEGY.md](../standards/TESTING_STRATEGY.md) §6 (Strict TDD):
-- RED: Escribir test que falla
-- GREEN: Implementación mínima para pasar
-- REFACTOR: Mejorar sin romper tests
-
 ### 2.5 Paso 5: Verify
+
+**Fase SDD**: `Verify`
 
 **Objetivo**: Confirmar que el código migrado se comporta igual que el original.
 
@@ -77,6 +103,18 @@ Verificar:
 - Tests pasan
 - Comportamiento observado = comportamiento esperado
 - No hay regressions en el resto del sistema
+
+**Si Verify falla**: Volver al paso apropiado (2, 3, o 4), arreglar, y re-verificar. Ver [WORKING_STANDARD.md](../standards/WORKING_STANDARD.md) §5 (Iteration Rule).
+
+### 2.6 Paso 6: Archive
+
+**Fase SDD**: `Archive`
+
+**Objetivo**: Cerrar el cambio y persistir el estado final.
+
+- Commitear con Conventional Commits + Gitmoji
+- Documentar en `Bitacora.md` qué se migró y por qué
+- Si es decisión arquitectónica, crear ADR en `docs/decisions/`
 
 ---
 
@@ -126,7 +164,7 @@ Los prototipos React son **SOLO REFERENCIA**, no código fuente. Ver [react.md](
 |------|--------|
 | **Prototipo React** | Extraer lógica de negocio, descartar UI |
 | **UI del prototipo** | REDISEÑAR en SvelteKit, no migrar |
-| **Lógica de negocio** | Migrar siguiendo proceso de 5 pasos |
+| **Lógica de negocio** | Migrar siguiendo proceso de 6 pasos (§2) |
 
 ### Cuándo Reescribir vs Adaptar
 
@@ -222,4 +260,4 @@ Trasladar layouts, CSS, o componentes UI sin adaptarlos al nuevo framework.
 
 ---
 
-*Patrón de migración: origen-agnóstico, destino-específico. 5 pasos, TDD mandatorio, prototipos descartables.*
+*Patrón de migración: origen-agnóstico, destino-específico. 6 pasos SDD-alineados, TDD mandatorio, prototipos descartables.*

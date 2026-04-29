@@ -40,7 +40,7 @@ When user says "I have code from X to bring into the project":
 
 - **Identify** business logic to preserve vs framework code to discard
 - **Determine** destination tool (Go Hexagonal / SvelteKit / Godot)
-- **Reference** [`.atl/patterns/code-migration.md`](../patterns/code-migration.md) for 5-step process
+- **Reference** [`.atl/patterns/code-migration.md`](../patterns/code-migration.md) for 6-step SDD-aligned process
 - **Output**: Migration plan (preserve/discard/destination)
 
 ### Initialization Command
