@@ -34,6 +34,12 @@ Analysis → Design → Tasks → Apply → Verify (until OK) → Archive
 - Document constraints (budget, timeline, technology)
 - Document tool-specific patterns in `.atl/patterns/` when tools are selected
 
+### Initialization Command
+```bash
+# Initialize SDD in a new project
+sdd init
+```
+
 ### Exit Criteria
 - [ ] Scope is documented and agreed upon
 - [ ] Requirements are captured in writing
@@ -60,8 +66,8 @@ Analysis → Design → Tasks → Apply → Verify (until OK) → Archive
 ### Activities
 - Architecture decisions (ADR if significant)
 - Data model design
-- Interface/API contracts
-- Technology selection
+- Interface/API contracts (Swagger/OpenAPI)
+- Technology selection (document in STACK_MAP.md)
 - Sequence or flow diagrams for complex interactions
 
 ### Exit Criteria
@@ -118,8 +124,23 @@ Analysis → Design → Tasks → Apply → Verify (until OK) → Archive
 ### Activities
 - Implement tasks in dependency order
 - Follow existing code patterns and conventions
-- Load relevant skills before coding
+- Load relevant skills before coding (`go-testing`, `sdd-apply`)
 - Write tests FIRST if Strict TDD Mode is active
+
+### Commands
+```bash
+# Backend
+go fmt ./...
+go vet ./...
+go test ./... -v -cover -race
+
+# Frontend
+npm run test
+npm run lint
+
+# Docker
+docker compose up -d
+```
 
 ### Exit Criteria
 - [ ] All tasks in the batch are implemented
@@ -149,6 +170,22 @@ Analysis → Design → Tasks → Apply → Verify (until OK) → Archive
 - Run tests if test infrastructure exists
 - Check for linting, type, or formatting errors
 - Review for consistency with design decisions
+
+### Tools
+```bash
+# Backend verification
+go vet ./...
+staticcheck ./...
+go test ./... -race
+
+# Frontend verification
+npm run lint
+npm run test
+npx playwright test
+
+# All
+go fmt ./...
+```
 
 ### Exit Criteria
 - [ ] All spec scenarios are satisfied
@@ -194,7 +231,17 @@ Still fails? Repeat until clean.
 ### Activities
 - Move delta specs to main specs (if applicable)
 - Write final summary
-- Commit with conventional commit message
+- Commit with Conventional Commits + Gitmoji
+
+### Commit Message Format
+```bash
+git commit -m "🎉 feat: add user authentication with JWT
+
+- Implement JWT middleware in backend
+- Add login/logout endpoints
+- Integrate with SvelteKit form actions
+- Add Playwright E2E tests for login flow"
+```
 
 ### Exit Criteria
 - [ ] Change is archived
@@ -227,16 +274,16 @@ Still fails? Repeat until clean.
 **Phase-Agent Mapping**:
 | SDD Phase | Agent | Responsibility |
 |-----------|-------|----------------|
-| Explore | `sdd-explore-general-dev-lc` | Investigate, gather context |
-| Propose | `sdd-propose-general-dev-lc` | Define intent, scope, approach |
-| Spec | `sdd-spec-general-dev-lc` | Write requirements, scenarios |
-| Design | `sdd-design-general-dev-lc` | Architecture decisions, approach |
-| Tasks | `sdd-tasks-general-dev-lc` | Break down implementation |
-| Apply | `sdd-apply-general-dev-lc` | Implement changes |
-| Verify | `sdd-verify-general-dev-lc` | Validate against specs |
-| Archive | `sdd-archive-general-dev-lc` | Close and persist |
+| Explore | `sdd-explore` | Investigate, gather context |
+| Propose | `sdd-propose` | Define intent, scope, approach |
+| Spec | `sdd-spec` | Write requirements, scenarios |
+| Design | `sdd-design` | Architecture decisions, approach |
+| Tasks | `sdd-tasks` | Break down implementation |
+| Apply | `sdd-apply` | Implement changes |
+| Verify | `sdd-verify` | Validate against specs |
+| Archive | `sdd-archive` | Close and persist |
 
-**Rule**: The orchestrator MUST launch one phase agent per phase. Combining multiple phases into a single agent launch is prohibited.
+**Rule**: The orchestrator launches one phase agent per phase. Combining multiple phases into a single agent launch is prohibited.
 
 ---
 
@@ -249,6 +296,15 @@ Still fails? Repeat until clean.
 5. **Iterate until clean**: One failed verify is not a failure — it's feedback. Fix and re-verify.
 
 **Synchronous Execution**: All SDD phases execute synchronously unless the user explicitly requests async. Tasks run sequentially — no background delegation, user sees progress in real-time.
+
+---
+
+## Referencias
+
+- [STYLE_GUIDE.md](STYLE_GUIDE.md) — Code standards
+- [TESTING_STRATEGY.md](TESTING_STRATEGY.md) — Testing approach
+- [CICD_PIPELINE.md](CICD_PIPELINE.md) — CI/CD automation
+- [ENGINEERING_MANIFEST.md](../governance/ENGINEERING_MANIFEST.md) — Project governance
 
 ---
 

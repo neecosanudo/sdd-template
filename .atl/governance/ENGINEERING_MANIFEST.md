@@ -4,34 +4,46 @@ This document defines the "operating system" of this project. Every LLM, agent, 
 
 ## 1. Interaction & Communication Protocol
 
-*   **Linguistic Identity:** Documentation, code comments, and communications must use **neutral second-person** forms appropriate to the project's declared language. Avoid overly casual or servile language.
+*   **Linguistic Identity:** Documentation in Spanish (AR), code in English. Comments explain WHY, not WHAT.
 *   **Operational Mode:** The agent acts as a **Senior Software Architect**. Before writing code, propose the structure and patterns, and wait for confirmation.
 *   **Change Management:** Strict **Conventional Commits** with **Gitmoji** (see `.atl/governance/COMMIT_CONVENTIONS.md`). Each change must be atomic (single responsibility).
 
 ## 2. Quality & Development Standards
 
 *   **TDD Is Mandatory:** No business logic code is accepted without a corresponding test suite written before or simultaneously. If a function cannot be tested, refactor it to be testable (Dependency Injection, pure functions).
-*   **Reference Architecture:** Preference for **Hexagonal Architecture (Ports & Adapters)** or **Clean Architecture**. Domain logic must be decoupled from frameworks, databases, and external agents.
+*   **Reference Architecture:** **Hexagonal (Ports & Adapters)** en Go con domain/application/infrastructure. Domain logic must be decoupled from frameworks, databases, and external agents.
 *   **Technical Prohibitions:** 
     *   Avoid "black box" libraries that obscure core logic.
     *   Prioritize readability and maintainability over brevity (no "code golf").
     *   Code must be self-explanatory.
 
-## 3. Environment Constraints (Neovim/CLI Workflow)
+## 3. Environment Constraints
 
-*   **Keyboard-Centric Navigation:** Code and config must be optimized for terminal, Neovim, and CLI tools. Do not depend on visual IDE features.
-*   **Code Documentation:** Use meaningful comments only where complexity requires it. Precise variable and function names are the first line of documentation.
-*   **Agnostic Configuration:** Linting, formatting, and LSP files must be standard and executable from any Unix-like terminal.
+### Go Toolchain
+*   **gofmt:** Obligatorio antes de cada commit
+*   **staticcheck:** Análisis estático adicional
+*   **go vet:** Verificación de errores comunes
+*   **Error handling:** `if err != nil` con `fmt.Errorf("context: %w", err)`
+
+### Frontend (SvelteKit + TypeScript)
+*   **ESLint flat config:** Linting automatizado
+*   **Prettier:** Formateo de código
+*   **TailwindCSS:** Utility-first, evitar CSS custom
+*   **Props tipadas:** TypeScript strict mode
+
+### CLI Tools
+*   **Keyboard-Centric:** Code and config optimized for terminal, Neovim, and CLI tools.
+*   **Standard tooling:** No depende de features de IDEs visuales.
 
 ## 4. Decision Governance (ADR)
 
-*   **Decision Records (ADR):** Any structural change, stack change, design pattern, or significant data flow **must** generate a file in `/docs/adr/NNNN-name.md`.
+*   **Decision Records (ADR):** Any structural change, stack change, design pattern, or significant data flow **must** generate a file in `docs/decisions/NNNN-name.md`.
 *   **Process:** Proposing structural changes without first writing the "why", context, and consequences in an ADR is prohibited.
 
 ## 5. Zero-Tolerance Enforcement
 
 *   **Pipeline Rejection:** Any warning or error from linters, type checkers, compilers, or test runners MUST be fixed before committing. The pipeline rejects changes with violations — no exceptions.
-*   **CI Gate:** All checks must pass: linting, type checking, tests, and formatting. A green build is non-negotiable.
+*   **CI Gate:** All checks must pass: `go vet`, `staticcheck`, `eslint`, `prettier`, `go test -race`. A green build is non-negotiable.
 *   **Immediate Remediation:** When a warning or error is introduced, fix it in the same session. Do not defer technical debt.
 *   **No Suppression:** Using pragma/annotation comments (e.g., `// eslint-disable`, `@ts-ignore`, `# noqa`, `#[allow(...)]`) to suppress warnings or errors is prohibited. The underlying issue MUST be fixed.
 
@@ -44,7 +56,11 @@ This document defines the "operating system" of this project. Every LLM, agent, 
 
 ## 7. Patterns-Before-Code Rule
 
-*   **Known Patterns First:** Before implementing, check `.atl/patterns/agnostic-fundamentals.md` for applicable patterns.
+*   **Known Patterns First:** Before implementing, check `.atl/patterns/` for applicable patterns:
+    - `go-hexagonal.md` — Go hexagonal architecture
+    - `svelte-component.md` — Svelte component patterns
+    - `gorm-repository.md` — GORM repository pattern
+    - `docker-multistage.md` — Docker multi-stage builds
 *   **Deviation Justification:** If no documented pattern fits, either:
     1. Adapt an existing pattern with documented justification, OR
     2. Document a new pattern in `.atl/patterns/` before implementing
@@ -59,13 +75,12 @@ This document defines the "operating system" of this project. Every LLM, agent, 
 
 ## 9. Stack Decision → Pattern Documentation
 
-*   **Rule:** Every stack or tool selection (language, framework, library, CI/CD platform) MUST produce a corresponding pattern file in `.atl/patterns/`.
+*   **Rule:** Every stack or tool selection MUST produce a corresponding pattern file in `.atl/patterns/`.
 *   **Rationale:** Tool choices without documented patterns become tribal knowledge. Patterns make tool decisions transferable and reviewable.
-*   **Process:** When adopting a new tool, create or extend a pattern file in `.atl/patterns/` that covers:
+*   **Process:** When adopting a new tool (e.g., choosing GORM), create or extend a pattern file (e.g., `gorm-repository.md`) that covers:
     1. Why this tool was chosen (decision context)
     2. How to use it correctly (usage pattern)
     3. Common pitfalls and how to avoid them
-*   **Exception:** Trivial tool choices (e.g., choosing `jq` over `awk`) do not require a pattern. Use judgment.
 
 ## 10. Default Execution Mode
 
@@ -73,6 +88,16 @@ This document defines the "operating system" of this project. Every LLM, agent, 
 *   **Flow:** `interactive` — SDD phases pause between stages for user confirmation
 *   **Task Execution:** `synchronous` — tasks execute sequentially; no background delegation; user sees real-time progress
 *   **Override:** These defaults apply unless the user explicitly requests a different mode (e.g., `async`, `engram-only`, etc.)
+
+---
+
+## Referencias
+
+- [STACK_MAP.md](../../docs/STACK_MAP.md) — Stack completo con versiones
+- [STYLE_GUIDE.md](../standards/STYLE_GUIDE.md) — Estándares de código
+- [TESTING_STRATEGY.md](../standards/TESTING_STRATEGY.md) — Estrategia de testing
+- [.atl/patterns/go-hexagonal.md](../patterns/go-hexagonal.md) — Arquitectura Go
+- [.atl/patterns/gorm-repository.md](../patterns/gorm-repository.md) — Repository pattern
 
 ---
 

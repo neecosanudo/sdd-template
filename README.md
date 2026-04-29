@@ -2,6 +2,8 @@
 
 > **What is this?** A repository template that guides you from the FIRST client conversation all the way to shipped software. It is BOTH a **project discovery tool** (for defining scope with your client) AND a **Spec-Driven Development (SDD) framework** (for building the right thing, right).
 
+> **Opinionated Stack:** This template comes with a real stack pre-selected: **Go + SvelteKit + GORM + JWT + Docker + PostgreSQL + TailwindCSS + SDD/TDD**. See [STACK_MAP.md](docs/STACK_MAP.md) for versions and compatibility matrix.
+
 ## Table of Contents
 
 1. [Getting Started](#-getting-started)
@@ -14,13 +16,49 @@
 
 ---
 
+## 🚀 Stack del Proyecto
+
+| Categoría | Herramienta | Versión |
+|-----------|-------------|---------|
+| **Backend** | Go + GORM | 1.25.0 + v1.31.1 |
+| **Frontend Principal** | SvelteKit | 2.0.0 |
+| **Frontend Prototipos** | React | 19.0.0 |
+| **Styling** | TailwindCSS | 3.4.1 (SvelteKit) / 4.1.14 (React) |
+| **Auth** | JWT (golang-jwt/v5) + bcrypt | v5.3.1 + v0.50.0 |
+| **DevOps** | Docker + docker-compose | multi-stage |
+| **Database** | PostgreSQL + SQLite (dev) | 16-alpine |
+| **Testing** | Go test + Vitest + Playwright | v1.8.4 + ^2.0.0 + 1.50.1 |
+| **Metodología** | SDD/TDD | Mandatorio |
+
+### Stack Map
+
+📄 **[docs/STACK_MAP.md](docs/STACK_MAP.md)** — Versiones exactas y matriz de compatibilidad
+
+---
+
+## 🎯 Filosofía del Template
+
+1. **Stack Opinionado:** No es agnóstico. Viene con herramientas reales y versiones probadas.
+2. **SDD Mandatorio:** Spec-Driven Development para toda feature.
+3. **TDD Obligatorio:** RED → GREEN → REFACTOR para lógica de dominio.
+4. **Arquitectura Hexagonal:** domain/application/infrastructure en Go.
+5. **Documentación en Español AR:** Documentación local, código en inglés.
+
+---
+
 ## 🚀 Getting Started
+
+### Prerequisites
+
+- **Go 1.25** — `go version`
+- **Node.js 22** — `node -v`
+- **Docker + docker-compose** — `docker compose version`
 
 ### 1. Download the Template
 
 ```bash
 # Clone the template
-git clone https://github.com/your-org/sdd-template.git my-new-project
+git clone https://github.com/neocono/sdd-template.git my-new-project
 cd my-new-project
 
 # Reset git history (this is YOUR project now)
@@ -30,7 +68,22 @@ git add .
 git commit -m "🎉 init: initial commit from sdd-template"
 
 # Initialize SDD in your project
-# (Follow your SDD tooling instructions)
+sdd init
+```
+
+### 2. Initial Setup
+
+```bash
+# Backend
+cd backend
+go mod init github.com/org/project/backend
+go get -d gorm.io/gorm@v1.31.1
+go get -d gorm.io/driver/postgres@v1.6.0
+
+# Frontend
+cd ../frontend
+npm install
+npm run dev
 ```
 
 ---
@@ -86,88 +139,6 @@ This separation ensures the template stays generic while projects accumulate the
 
 ---
 
-## ⚙️ Default Modes
-
-This template enforces three behavioral modes:
-
-| Mode | Value | Description |
-|------|-------|-------------|
-| **Persistence** | `hybrid` | Progress persists to both Engram (persistent memory) and openspec (filesystem) |
-| **Execution** | `interactive` | SDD phases pause between stages for user confirmation |
-| **Tasks** | `synchronous` | Tasks execute sequentially — no background delegation; user sees progress in real-time |
-
-These are **enforced defaults**, not suggestions. Override only when explicitly requested by the user.
-
----
-
-## 🤝 Contributing to This Template
-
-See **[`CONTRIBUTING.md`](CONTRIBUTING.md)** for:
-- How to propose new patterns for the template
-- How to suggest improvements via GitHub issues/PRs
-- How to share learnings from your project
-
----
-
-## 🚀 Applying Template to Existing Projects
-
-See **[`docs/EXISTING_PROJECTS.md`](docs/EXISTING_PROJECTS.md)** for:
-- Assessment checklist (what's missing, what's good)
-- Migration priority order
-- Common pitfalls when retrofitting
-
-### Quick Start — Copy & Paste Prompt for OpenCode
-
-Want to adopt this framework in your existing project? Copy and paste the prompt below into your OpenCode agent:
-
-```
-I want to adopt the SDD Template framework in my existing project. Follow these steps:
-
-1. Download the framework code from https://github.com/neecosanudo/sdd-template
-2. Analyze the downloaded template structure, especially:
-   - .atl/governance/ (working rules and manifesto)
-   - .atl/standards/ (style, testing, security, working standard)
-   - .atl/patterns/ (engineering patterns)
-   - .atl/agent/ (agent behavior rules)
-   - .atl/decisions/ (decision log)
-   - .atl/specs/ (SDD specs)
-   - docs/EXISTING_PROJECTS.md (migration guide)
-
-3. CRITICAL: Each phase below MUST be executed as a FULL SDD cycle following the framework's standard:
-   Explore → Propose → Spec → Design → Tasks → Apply → Verify (until OK) → Archive
-   
-   You MUST follow the instructions in .atl/standards/WORKING_STANDARD.md and act as an SDD orchestrator.
-   Do NOT improvise or skip steps. Use the framework's governance and standards as the single source of truth.
-
-PHASE 1 — Documentation Migration (NO code changes):
-- Run a complete SDD cycle to migrate documentation only
-- Read my existing project docs (README, docs/, wiki, notes)
-- Map existing docs to the template structure
-- Create missing template files from defaults
-- Migrate existing content to template structure
-- Create Bitacora.md at project root
-- Create docs/LEARNINGS_MAP.md (transversal learnings only)
-- Update README.md to reference template structure
-- Do NOT modify any source code
-- Do NOT delete existing files
-- Verify until OK before archiving this phase
-
-PHASE 2 — Compliance Analysis (AFTER documentation is complete and I confirm):
-- Run a complete SDD cycle to analyze compliance
-- As orchestrator, systematically scan the entire codebase against:
-  * .atl/governance/ENGINEERING_MANIFEST.md
-  * .atl/standards/ (all standards files)
-  * .atl/patterns/ (applicable patterns)
-- For every deviation found, document it with severity and proposed fix
-- Provide a prioritized report of all corrections needed
-- Do NOT make any code changes yet — only analyze and report
-- Verify until OK before archiving this phase
-
-Execute PHASE 1 first. Only proceed to PHASE 2 after I explicitly confirm the documentation migration is complete.
-```
-
----
-
 ## 🔄 SDD Cycle
 
 Once discovery is complete, use the SDD framework to build:
@@ -197,7 +168,7 @@ When discovery and initial design are complete, pass these to your team:
 | Deliverable | Location | For Whom |
 |-------------|----------|----------|
 | Requirements & User Stories | `Bitacora.md` + your docs | Everyone |
-| Architecture Decisions | `docs/adr/` | Architects, Tech Leads |
+| Architecture Decisions | `docs/decisions/` | Architects, Tech Leads |
 | Design Documents | `docs/design/` or `openspec/` | Programmers |
 | UI/UX Direction | Your design files | Designers |
 | Standards & Patterns | `.atl/standards/`, `.atl/patterns/` | Everyone |
@@ -216,7 +187,7 @@ For LLM navigation, read `.atl/specs/navigation.spec.md` first.
 |-----------|-------------------|
 | `.atl/governance/` | Working rules: Manifesto, Commits, Contributing, Versioning |
 | `.atl/standards/` | Style, Testing, Security, Release, CI/CD, **Working Standard** |
-| `.atl/patterns/` | Language-agnostic engineering patterns |
+| `.atl/patterns/` | Engineering patterns (go-hexagonal, svelte-component, gorm-repository, docker-multistage) |
 | `.atl/agent/` | Agent behavior rules (delegation, skills, manual write review) |
 | `.atl/decisions/` | Decision log for architectural and engineering decisions |
 | `.atl/specs/` | SDD specs for navigation and governance |
@@ -228,6 +199,7 @@ For LLM navigation, read `.atl/specs/navigation.spec.md` first.
 | `README.md` | This file |
 | `Bitacora.md` | Ongoing conversation history between user and agent |
 | `docs/` | Product-specific documentation (architecture, ADRs) |
+| `docs/STACK_MAP.md` | Stack completo con versiones y compatibilidad |
 
 ---
 
