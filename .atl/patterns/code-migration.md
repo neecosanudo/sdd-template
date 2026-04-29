@@ -28,18 +28,18 @@ Todo código externo debe pasar por estos 6 pasos. Cada paso mapea 1:1 con una f
 
 | Paso | Nombre SDD | Qué hace |
 |------|------------|----------|
-| 1 | **Analyse** | Separar lógica de negocio del plumbing |
+| 1 | **Explore** | Separar lógica de negocio del plumbing |
 | 2 | **Design** | Mapear conceptos origen → destino |
 | 3 | **Tasks** | Desglosar migración en tareas concretas |
 | 4 | **Apply** | Reescribir en destino + TDD |
 | 5 | **Verify** | Validar paridad de comportamiento |
 | 6 | **Archive** | Cerrar cambio y commitear |
 
-> **Nota**: Las palabras son las mismas que usa el ciclo SDD (`Analyse`, `Design`, `Tasks`, `Apply`, `Verify`, `Archive`). El agente no debe confundir "Analyse" con "Analysis" — en migración usamos la forma verbal para indicar acción.
+> **Nota**: El ciclo SDD usa Explore, Design, Tasks, Apply, Verify, Archive (ver glossary §1). En migración, Explore refiere al análisis de código fuente, no a investigación con cliente.
 
-### 2.1 Paso 1: Analyse
+### 2.1 Paso 1: Explore
 
-**Fase SDD**: `Analyse`
+**Fase SDD**: `Explore`
 
 **Objetivo**: Identificar qué es lógica de negocio y qué es framework plumbing.
 
@@ -50,6 +50,8 @@ Plumbing = código que conecta componentes o maneja framework
 
 **Regla**: Si el código no hace ninguna validación o cálculo de dominio, es plumbing y debe descartarse o reescribirse.
 
+> **Recursos de Explore**: Ver [migration-discovery.md](migration-discovery.md) para discovery pre-migración, y [migration-analysis.md](migration-analysis.md) recursos 1-4 y 6 (Mapa Visual, Árbol de Componentes, Flujo de Estados, Árbol de Navegación, Inventario de Interacciones).
+
 ### 2.2 Paso 2: Design
 
 **Fase SDD**: `Design`
@@ -59,6 +61,8 @@ Plumbing = código que conecta componentes o maneja framework
 Usar las tablas de mapeo en §3 según el destino (Go/SvelteKit/Godot). No implementar todavía — solo planificar.
 
 **Output**: Notas de diseño con conceptos mapeados.
+
+> **Recursos de Design**: Ver [migration-analysis.md](migration-analysis.md) recursos 5 y 7 (Matriz de Funcionalidades, Flujo de Datos).
 
 ### 2.3 Paso 3: Tasks
 
@@ -106,6 +110,8 @@ Verificar:
 
 **Si Verify falla**: Volver al paso apropiado (2, 3, o 4), arreglar, y re-verificar. Ver [WORKING_STANDARD.md](../standards/WORKING_STANDARD.md) §5 (Iteration Rule).
 
+> **Recursos de Verify**: Ver [migration-verify.md](migration-verify.md) §1 (Checklist), §2 (Análisis de Diffs), §3 (Verification Workflow).
+
 ### 2.6 Paso 6: Archive
 
 **Fase SDD**: `Archive`
@@ -115,6 +121,8 @@ Verificar:
 - Commitear con Conventional Commits + Gitmoji
 - Documentar en `Bitacora.md` qué se migró y por qué
 - Si es decisión arquitectónica, crear ADR en `docs/decisions/`
+
+> **Recursos de Archive**: Ver [migration-verify.md](migration-verify.md) §2 (Análisis de Diffs) para comparación final.
 
 ---
 
@@ -257,6 +265,9 @@ Trasladar layouts, CSS, o componentes UI sin adaptarlos al nuevo framework.
 - [react.md](../../docs/tools/react.md) — Regla de prototipos descartables
 - [TESTING_STRATEGY.md](../standards/TESTING_STRATEGY.md) — Estrategia de testing y TDD
 - [WORKING_STANDARD.md](../standards/WORKING_STANDARD.md) — Ciclo de desarrollo estándar
+- [migration-discovery.md](migration-discovery.md) — Descubrimiento pre-migración
+- [migration-analysis.md](migration-analysis.md) — Recursos de análisis (7 recursos)
+- [migration-verify.md](migration-verify.md) — Verificación post-migración
 
 ---
 
