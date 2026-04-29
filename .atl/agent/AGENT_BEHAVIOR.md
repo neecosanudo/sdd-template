@@ -26,8 +26,8 @@ This document defines how AI agents must operate within this project. These rule
 |-----------------|---------------|
 | Go tests, Bubbletea TUI testing | `go-testing` |
 | Creating new AI skills | `skill-creator` |
-| Spec-driven development phases | Phase-specific SDD skill |
-| Discovery/analysis phase guidance | Working standard (Analysis phase in `.atl/standards/WORKING_STANDARD.md`) |
+| Spec-driven development phases | Phase-specific SDD skill + `.atl/glossary.md` |
+| Discovery/analysis phase guidance | Working standard (Explore phase in `.atl/standards/WORKING_STANDARD.md`) |
 
 ## 3. Manual Write Review
 
@@ -63,7 +63,7 @@ This document defines how AI agents must operate within this project. These rule
 When user says **"migrate from X"**, **"bring code from Y"**, or similar — agent MUST:
 
 1. Read `.atl/patterns/code-migration.md` BEFORE any implementation
-2. Follow the 6-step SDD-aligned migration process (Analyse → Design → Tasks → Apply → Verify → Archive)
+2. Follow the 6-step SDD-aligned migration process (Explore → Design → Tasks → Apply → Verify → Archive)
 3. Treat React prototypes as disposable reference (extract logic, discard UI)
 4. Write tests BEFORE implementation (TDD mandatory)
 
@@ -78,7 +78,7 @@ During migration tasks:
 
 | Step | SDD Phase | Action |
 |------|-----------|--------|
-| 1. Analyse | Analyse | Separate business logic from framework plumbing |
+| 1. Explore | Explore | Separate business logic from framework plumbing |
 | 2. Design | Design | Map concepts using destination tables (§3 in code-migration.md) |
 | 3. Tasks | Tasks | Break migration into small, sequential tasks |
 | 4. Apply | Apply | Rewrite in destination + TDD (RED → GREEN → REFACTOR) |

@@ -1,4 +1,4 @@
-# Working Standard: Analysis → Design → Tasks → Apply → Verify
+# Working Standard: Explore → Propose → Spec → Design → Tasks → Apply → Verify
 
 > **Purpose**: Document the working cycle that turns client conversations into working software. This standard applies to ALL projects using this template.
 >
@@ -16,7 +16,7 @@ Analysis → Design → Tasks → Apply → Verify (until OK) → Archive
 
 ---
 
-## Phase 1: Analysis
+## Phase 1: Explore
 
 **What**: Understand the problem WITH the client before writing any code.
 
@@ -269,30 +269,11 @@ git commit -m "🎉 feat: add user authentication with JWT
 
 ## SDD Phase Mapping
 
-| Working Standard | SDD Phase | Notes |
-|-----------------|-----------|-------|
-| Analysis | Explore + Propose + Spec | SDD splits analysis into three formal phases |
-| Design | Design | Direct mapping |
-| Tasks | Tasks | Direct mapping |
-| Apply | Apply | Direct mapping |
-| Verify | Verify | Direct mapping |
-| Archive | Archive | Direct mapping |
+Para definiciones canónicas de cada fase SDD, ver:
 
-**Key insight**: SDD formalizes the Analysis phase into Explore, Propose, and Spec. Each SDD phase is executed by a **dedicated agent** — phases MUST NOT be combined or blended. The orchestrator launches one phase agent at a time, sequentially.
+📄 **[`.atl/glossary.md`](.atl/glossary.md)** — Tabla completa de fases, agentes y outputs
 
-**Phase-Agent Mapping**:
-| SDD Phase | Agent | Responsibility |
-|-----------|-------|----------------|
-| Explore | `sdd-explore` | Investigate, gather context |
-| Propose | `sdd-propose` | Define intent, scope, approach |
-| Spec | `sdd-spec` | Write requirements, scenarios |
-| Design | `sdd-design` | Architecture decisions, approach |
-| Tasks | `sdd-tasks` | Break down implementation |
-| Apply | `sdd-apply` | Implement changes |
-| Verify | `sdd-verify` | Validate against specs |
-| Archive | `sdd-archive` | Close and persist |
-
-**Rule**: The orchestrator launches one phase agent per phase. Combining multiple phases into a single agent launch is prohibited.
+**Nota**: El Working Standard desglosa "Analysis" en tres fases formales SDD: Explore, Propose, y Spec. SDD formaliza lo que el Working Standard llama "Analysis".
 
 ---
 

@@ -382,36 +382,27 @@
 
 ## Patrones Transversales
 
-### 1. Agnostic Fundamentals (Memory & Security)
-- **Archivo**: `.atl/patterns/agnostic-fundamentals.md`
-- **Contenido**:
-  - Memory Alignment & Padding (Go structs)
-  - Security by Design (Least Privilege, Input Validation, Security-First Refactoring)
-  - SDD Cycle documentation
-  - Architectural Integrity (Dependency Inversion)
-- **Proyectos**: personal-web-page, sdd-template, low-iq-code/godot-tetris-minimalist
-
-### 2. Conventional Commits + Gitmoji
+### 1. Conventional Commits + Gitmoji
 - **Formato**: `:emoji: type(scope): description`
 - **Enforcement**: commitlint.config.js + .githooks/commit-msg
 - **Proyectos**: personal-web-page (implementado), sdd-template (documentado como template)
 
-### 3. .atl/ Governance Structure
+### 2. .atl/ Governance Structure
 - **Estructura**: governance/, standards/, patterns/, agent/, decisions/, specs/
 - **Proyectos**: personal-web-page (completo), sdd-template (template), components-designer (vacío), low-iq-code/godot-tetris-minimalist (completo)
 
-### 4. Docker Multi-Stage Builds
+### 3. Docker Multi-Stage Builds
 - **Frontend**: Bun/Node build → producción mínima
 - **Backend**: Go build con CGO → Alpine runtime + non-root user
 - **Proyectos**: personal-web-page (implementado)
 
-### 5. Clean Code Principles
+### 4. Clean Code Principles
 - **KISS**: Keep It Simple, Stupid
 - **YAGNI**: You Ain't Gonna Need It
 - **SOLID**: Especialmente para desacoplamiento
 - **Proyectos**: personal-web-page (documentado en STYLE_GUIDE.md)
 
-### 6. Naming Conventions
+### 5. Naming Conventions
 - **Go**: MixedCaps (exports), camelCase (privados)
 - **TypeScript/Svelte**: camelCase (vars/funcs), PascalCase (components), SCREAMING_SNAKE_CASE (constantes)
 - **Archivos**: kebab-case (Svelte), camelCase (utilities)
@@ -457,8 +448,10 @@ project-root/
 │   │   ├── COMMIT_CONVENTIONS.md
 │   │   ├── CONTRIBUTING.md
 │   │   └── VERSIONING.md
-│   ├── patterns/                  # Engineering patterns (agnostic)
-│   │   └── agnostic-fundamentals.md
+│   ├── patterns/                  # Engineering patterns
+│   │   ├── go-hexagonal.md
+│   │   ├── svelte-component.md
+│   │   └── ...
 │   ├── specs/                     # SDD specs (navigation, governance)
 │   │   └── navigation.spec.md
 │   └── standards/                 # Style, Testing, Security, CI/CD, Working Standard

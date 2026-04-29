@@ -149,15 +149,7 @@ Explore → Propose → Spec → Design → Tasks → Apply → Verify (until OK
 
 For the operational details — entry/exit criteria, responsibilities, and the "verify until OK" iteration rule — see:
 
-📄 **[`.atl/standards/WORKING_STANDARD.md`](.atl/standards/WORKING_STANDARD.md)**
-
-### Batch-Verify Cycle
-
-A single-pass verification that either passes (all checks green) or fails (any check red). **No partial success.** Fix all issues before committing.
-
-### Iteration Rule
-
-If verification finds issues → return to appropriate phase → re-verify. Repeat until clean. **You do NOT proceed to Archive until Verify passes.**
+📄 **[`.atl/glossary.md`](.atl/glossary.md)** — Terminología canónica y definiciones
 
 ---
 

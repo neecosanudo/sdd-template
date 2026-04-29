@@ -87,7 +87,26 @@ This document defines the "operating system" of this project. Every LLM, agent, 
 *   **Persistence:** `hybrid` — progress persists to both Engram and openspec (filesystem)
 *   **Flow:** `interactive` — SDD phases pause between stages for user confirmation
 *   **Task Execution:** `synchronous` — tasks execute sequentially; no background delegation; user sees real-time progress
-*   **Override:** These defaults apply unless the user explicitly requests a different mode (e.g., `async`, `engram-only`, etc.)
+* **Override:** These defaults apply unless the user explicitly requests a different mode (e.g., `async`, `engram-only`, etc.)
+
+## 11. Security by Design
+
+* **Principle:** Security is not optional. Apply security principles AFTER refactoring is complete — never skip for the sake of speed.
+
+### 11.1 Least Privilege
+* **Principle:** Every module, service, or user should only have access to the resources necessary for its legitimate purpose.
+* **Application:** Specific interfaces, scoped API keys, non-root containers.
+
+### 11.2 Input Validation (Never Trust)
+* **Principle:** Assume all input is malicious until validated.
+* **Application:** Schema validation at boundaries, sanitization, range checks.
+
+### 11.3 Security-First Refactoring
+* **Principle:** When refactoring code, apply security principles AFTER the refactor is complete — never skip security for the sake of speed.
+* **Sequence:** Refactor → Verify correctness → Apply security hardening.
+* **Never skip:** Security hardening is not optional. If a refactor makes security harder, the refactor is incomplete.
+* **Threat Modeling:** Before and after refactoring, assess attack surface changes. Document new threats introduced or mitigated.
+* **Example:** When extracting a function for reuse, ensure it still validates inputs and follows least-privilege before considering the refactor done.
 
 ---
 
