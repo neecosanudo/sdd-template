@@ -87,4 +87,24 @@ During migration tasks:
 
 ---
 
+## 6. Bitacora Decision Logging
+
+### 6.1 Immediate Recording Requirement
+
+When a project decision is reached with the human collaborator, the agent MUST immediately append a new entry to `Bitacora.md` at the repository root. Do NOT batch entries or defer to session end.
+
+### 6.2 Entry Format
+
+Each entry MUST follow the Bitacora.md convention with date, context, decision, and motivation:
+
+```markdown
+### YYYY-MM-DD — Brief Title
+
+**Context:** What was the situation or question?
+**Decision:** What was agreed or decided?
+**Motivation:** Why was this the right choice?
+```
+
+---
+
 *This document is consumed by AI agents. Human collaborators should refer to `.atl/governance/` for project rules.*

@@ -2,7 +2,7 @@
 
 **Pattern ID**: code-migration
 **Versión**: 1.0
-**dependencias**: [go-hexagonal.md](go-hexagonal.md) | [svelte-component.md](svelte-component.md) | [gorm-repository.md](gorm-repository.md) | [react.md](../../docs/tools/react.md) | [TESTING_STRATEGY.md](../standards/TESTING_STRATEGY.md)
+**dependencias**: [go-hexagonal.md](go-hexagonal.md) | [svelte-component.md](svelte-component.md) | [gorm-repository.md](gorm-repository.md) | [docs/tools/react.md](../../docs/tools/react.md) | [TESTING_STRATEGY.md](../standards/TESTING_STRATEGY.md)
 
 ---
 
@@ -50,7 +50,7 @@ Plumbing = código que conecta componentes o maneja framework
 
 **Regla**: Si el código no hace ninguna validación o cálculo de dominio, es plumbing y debe descartarse o reescribirse.
 
-> **Recursos de Explore**: Ver [migration-discovery.md](migration-discovery.md) para discovery pre-migración, y [migration-analysis.md](migration-analysis.md) recursos 1-4 y 6 (Mapa Visual, Árbol de Componentes, Flujo de Estados, Árbol de Navegación, Inventario de Interacciones).
+> **Recursos de Explore**: Ver [migration-discovery.md](migration-discovery.md) para discovery pre-migración, y [migration-analysis.md](migration-analysis.md) recursos 1-5 (Mapa Visual, Árbol de Componentes, Flujo de Estados, Árbol de Navegación, Inventario de Interacciones).
 
 ### 2.2 Paso 2: Design
 
@@ -62,7 +62,7 @@ Usar las tablas de mapeo en §3 según el destino (Go/SvelteKit/Godot). No imple
 
 **Output**: Notas de diseño con conceptos mapeados.
 
-> **Recursos de Design**: Ver [migration-analysis.md](migration-analysis.md) recursos 5 y 7 (Matriz de Funcionalidades, Flujo de Datos).
+> **Recursos de Design**: Ver [migration-analysis.md](migration-analysis.md) recursos 6 y 7 (Matriz de Funcionalidades, Flujo de Datos).
 
 ### 2.3 Paso 3: Tasks
 
@@ -166,7 +166,7 @@ Verificar:
 
 ### ⚠️ Regla Crítica: Prototipos React son DESECHABLES
 
-Los prototipos React son **SOLO REFERENCIA**, no código fuente. Ver [react.md](../../docs/tools/react.md) §1:
+Los prototipos React son **SOLO REFERENCIA**, no código fuente. Ver [docs/tools/react.md](../../docs/tools/react.md) §1:
 
 | Tipo | Acción |
 |------|--------|
@@ -262,7 +262,7 @@ Trasladar layouts, CSS, o componentes UI sin adaptarlos al nuevo framework.
 - [go-hexagonal.md](go-hexagonal.md) — Arquitectura hexagonal para Go
 - [gorm-repository.md](gorm-repository.md) — Patrón Repository con GORM
 - [svelte-component.md](svelte-component.md) — Componentes SvelteKit
-- [react.md](../../docs/tools/react.md) — Regla de prototipos descartables
+- [docs/tools/react.md](../../docs/tools/react.md) — Regla de prototipos descartables
 - [TESTING_STRATEGY.md](../standards/TESTING_STRATEGY.md) — Estrategia de testing y TDD
 - [WORKING_STANDARD.md](../standards/WORKING_STANDARD.md) — Ciclo de desarrollo estándar
 - [migration-discovery.md](migration-discovery.md) — Descubrimiento pre-migración

@@ -123,7 +123,7 @@ App
 
 ---
 
-### Recurso 6: Inventario de Interacciones
+### Recurso 5: Inventario de Interacciones
 
 **Purpose**: Catalogar eventos, handlers y acciones del sistema.
 
@@ -146,7 +146,7 @@ Los siguientes recursos se ejecutan durante la fase Design de la migración.
 
 ---
 
-### Recurso 5: Matriz de Funcionalidades
+### Recurso 6: Matriz de Funcionalidades
 
 **Purpose**: mapear Features → Components → Logic → State para planificar migración.
 

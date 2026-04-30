@@ -271,7 +271,7 @@ git commit -m "🎉 feat: add user authentication with JWT
 
 Para definiciones canónicas de cada fase SDD, ver:
 
-📄 **[`.atl/glossary.md`](.atl/glossary.md)** — Tabla completa de fases, agentes y outputs
+📄 **[`../glossary.md`](../glossary.md)** — Tabla completa de fases, agentes y outputs
 
 **Nota**: El Working Standard desglosa "Analysis" en tres fases formales SDD: Explore, Propose, y Spec. SDD formaliza lo que el Working Standard llama "Analysis".
 

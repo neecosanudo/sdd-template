@@ -62,9 +62,11 @@ Una verificación de pase único que:
 
 | Mecanismo | Tipo | Ubicación | Formato | Uso |
 |-----------|------|-----------|---------|-----|
-| **Bitacora.md** | Informal | Raíz del proyecto | ```markdown\n### YYYY-MM-DD — Título\n**Context:** situación\n**Decision:** decisión\n**Motivation:** motivación\n``` | Conversación continua, contexto histórico |
+| **Bitacora.md** | Informal | Raíz del proyecto | ```markdown\n### YYYY-MM-DD — Título\n**Context:** situación\n**Decision:** decisión\n**Motivation:** motivación\n``` | Conversación continua, contexto histórico. Mantenido por el agente. |
 | **DECISION_LOG.md** | Arquitectural | Raíz del proyecto | 6 campos: Context, Decision, Consequences, Alternatives, Date, Status | Decisiones incrementales de arquitectura |
 | **ADR** | Estructural | `docs/decisions/NNNN-name.md` | Formato ADR (Título, Estado, Contexto, Decisión, Consecuencias) | Cambios mayores de stack o arquitectura |
+
+> **Engram**: Además de Bitacora.md, el agente persiste decisiones en Engram (memoria persistente técnica, machine-readable, searchable). Ambos coexisten — Bitacora es cronología humana, Engram es búsqueda técnica.
 
 ### Ruta de Promoción
 
@@ -97,8 +99,9 @@ Bitacora.md → DECISION_LOG.md → ADR
 
 | Tipo | Idioma | Notas |
 |------|--------|-------|
-| **Documentación** | Español (AR) | README, specs, estándares, guías |
-| **Código** | English | Variables, funciones, tests, comments |
+| **Documentación (.md)** | Español (AR) | README, specs, estándares, guías, toda documentación |
+| **Código: identificadores** | English | Variables, funciones, clases, nombres de archivo |
+| **Código: string literals** | Español (AR) | Mensajes al usuario, textos de UI, strings en código |
 | **Comments** | Explican WHY, no WHAT | El código dice qué hace; el comment dice por qué |
 
 ### Override a navigation.spec.md
