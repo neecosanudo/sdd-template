@@ -10,13 +10,13 @@
 ## 3 Etapas del Proyecto
 
 ```
-Discovery → Pre-SDD → SDD循环
+Discovery -> Pre-SDD -> SDD Cycle (Loop)
 ```
 
-### Discovery (Análisis inicial)
-**Antes de cualquier código.** Definir visión, user personas, MVP scope, ciclos de entrega.
+### Discovery (Analisis inicial)
+**Antes de cualquier codigo.** Definir vision, user personas, MVP scope, ciclos de entrega.
 
-### Pre-SDD (Preparación)
+### Pre-SDD (Preparacion)
 **Antes de cada ciclo SDD.** Verificar historias de usuarios definidas y ciclos MVP completados.
 
 ### SDD (Ciclo de desarrollo)
@@ -27,40 +27,40 @@ Discovery → Pre-SDD → SDD循环
 ## SDD Cycle Overview
 
 ```
-Explore → Propose → Spec → Design → Tasks → Apply → Verify → Archive
-                                                        ↓
+Explore -> Propose -> Spec -> Design -> Tasks -> Apply -> Verify -> Archive
+                                                        |
                                               100% PASS required
 ```
 
 ---
 
-## Modo de Ejecución (Default)
+## Modo de Ejecucion (Default)
 
 ```
-[Interactive] → [Auto: Tasks→Apply→Verify] → [Interactive] → Archive
+[Interactive] -> [Auto: Tasks -> Apply -> Verify] -> [Interactive] -> Archive
 ```
 
 | Fases | Modo |
 |-------|------|
-| Explore → Design | `interactive` |
-| Tasks → Apply → Verify | `auto` (loop hasta 100%) |
+| Explore -> Design | `interactive` |
+| Tasks -> Apply -> Verify | `auto` (loop hasta 100%) |
 | Antes de Archive | `interactive` |
 
-**Override:** Usuario puede pedir otro modo por sesión.
+**Override:** Usuario puede pedir otro modo por sesion.
 
 ---
 
 ## Automatic Verify Loop
 
 ```
-Tasks ──▶ Apply ──▶ Verify ──FAIL──▶ Tasks ──▶ Apply ──▶ Verify ──FAIL──▶ Tasks
-  ▲                                                                     │
-  │                                                                     │
-  └─────────────────────────── SUCCESS (100%) ◀────────────────────────┘
+Tasks --> Apply --> Verify --FAIL--> Tasks --> Apply --> Verify --FAIL--> Tasks
+  ^                                                                     |
+  |                                                                     |
+  +--------------------------- SUCCESS (100%) <-------------------------+
 ```
 
-**Regla:** Si Verify falla → volver a Tasks (NO a Design).
-**Límite:** Max 3 intentos.
+**Regla:** Si Verify falla -> volver a Tasks (NO a Design).
+**Limite:** Max 3 intentos.
 
 ---
 
@@ -74,7 +74,7 @@ También ver `README.md` para el prompt de entrada que el usuario debe copiar y 
 
 ## References
 
-- [.atl/ENTRY.md](../ENTRY.md) — Punto de entrada fijo
+- [.atl/ENTRY.md](../ENTRY.md) - Punto de entrada fijo
 - [.atl/agent/AGENT_BEHAVIOR.md](../agent/AGENT_BEHAVIOR.md)
 - [.atl/governance/ENGINEERING_MANIFEST.md](../governance/ENGINEERING_MANIFEST.md)
 - [.atl/standards/WORKING_STANDARD.md](../standards/WORKING_STANDARD.md)
