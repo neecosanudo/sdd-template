@@ -1,110 +1,64 @@
-# Agent Behavior Rules (AGENT_BEHAVIOR.md)
+# Agent Behavior Rules
 
-This document defines how AI agents must operate within this project. These rules establish the executor boundary and ensure consistent, safe, and auditable behavior.
+Cómo operan los agentes en este proyecto.
 
-## 1. Delegation Protocol
+## 1. Eres Ejecutor, No Orquestador
 
-### 1.1 Executor-Only Boundary
-- **No sub-agent spawning:** Agents in this project are EXECUTORS, not orchestrators. You MUST NOT call `delegate`, `task`, or any equivalent mechanism that spawns additional agents.
-- **Direct execution:** All work must be performed directly by the executing agent. Do not bounce work to other agents.
-- **Single-threaded execution:** Work sequentially, not in parallel, unless explicitly requested by the user.
+- **No delegues.** Hacé el trabajo vos mismo.
+- **Sequential.** Trabajo uno a uno, salvo que el usuario pida paralelismo.
+- **Completa.** Terminá la tarea antes de reportar.
 
-### 1.2 Task Boundaries
-- Complete assigned tasks fully before reporting completion.
-- Do not partially implement and delegate remaining work.
-- If a task is too large, report back with a blocker and request subdivision.
+## 2. Leer Antes de Escribir
 
-## 2. Skill Usage
+- **Archivo existente** → LEELO primero.
+- **Archivo nuevo** → VERIFICÁ que no exista.
+- **Después de escribir** → Corré verification (compilación, tests, lint).
 
-### 2.1 Load-Before-Code Rule
-- **Trigger detection:** When a task matches a known skill context (e.g., "Go tests" → `go-testing`), you MUST load the corresponding skill BEFORE writing any code.
-- **Skill precedence:** If multiple skills match, apply them in order of specificity. When uncertain, load all potentially relevant skills.
-- **Skill binding:** Once loaded, follow the skill's instructions strictly. Do not improvise outside the skill's patterns.
+## 3. Skill Cargado Antes del Código
 
-### 2.2 Trigger-Matching Precedence
-| Trigger Context | Skill to Load |
-|-----------------|---------------|
-| Go tests, Bubbletea TUI testing | `go-testing` |
-| Creating new AI skills | `skill-creator` |
-| Spec-driven development phases | Phase-specific SDD skill + `.atl/glossary.md` |
-| Discovery/analysis phase guidance | Working standard (Explore phase in `.atl/standards/WORKING_STANDARD.md`) |
+Si tu tarea coincide con un skill → CARGÁ el skill ANTES de escribir:
 
-## 3. Manual Write Review
+| Contexto | Skill |
+|---------|-------|
+| Go tests | `go-testing` |
+| Crear skills | `skill-creator` |
+| SDD phases | Phase skill (sdd-apply, sdd-spec, etc.) |
 
-### 3.1 Read-First Requirement
-- Before modifying any existing file, you MUST read its current contents.
-- Before creating a new file, verify it does not already exist.
-- For critical files (config.yaml, manifests), read relevant sections before making changes.
+## 4. Modos de Persistencia
 
-### 3.2 Verify-After Requirement
-- After writing code, run relevant verification (compilation, linting, tests).
-- Confirm all file operations succeeded before reporting completion.
-- For file creations, verify with `git status` or `ls` that the file exists.
+| Modo | Comportamiento |
+|------|----------------|
+| `engram` (default) | Solo Engram, mínimo filesystem |
+| `hybrid` | Ambos |
+| `openspec` | Solo filesystem |
+| `none` | Sin persistencia |
 
-## 4. Delegation Restriction
+En `engram`: leé de `sdd/{change-name}/{phase}`.
 
-### 4.1 Phase Agent Scope
-- Phase agents (sdd-apply, sdd-spec, sdd-design, etc.) are EXECUTORS per the SDD phase common protocol.
-- Executors do NOT delegate. They implement tasks directly.
-- Only the orchestrator may spawn or coordinate sub-agents.
+## 5. Migración de Código
 
-### 4.2 Exception Handling
-- If a task requires expertise outside the agent's scope, do NOT delegate. Instead:
-  1. Report the limitation to the orchestrator
-  2. Request explicit permission to consult external resources
-  3. Document the limitation in the task output
+Si el usuario dice "traer código de X":
+1. Leé `.atl/patterns/code-migration.md` PRIMERO
+2. Seguí los 6 pasos SDD
+3. React = referencia, no fuente
+4. TDD mandatorio
 
----
+**Prohibido:**
+- Copiar y pegar de React
+- Skippear tests
 
-## 5. Code Migration Protocol
+## 6. Bitacora
 
-### 5.1 Trigger Condition
-
-When user says **"migrate from X"**, **"bring code from Y"**, or similar — agent MUST:
-
-1. Read `.atl/patterns/code-migration.md` BEFORE any implementation
-2. Follow the 6-step SDD-aligned migration process (Explore → Design → Tasks → Apply → Verify → Archive)
-3. Treat React prototypes as disposable reference (extract logic, discard UI)
-4. Write tests BEFORE implementation (TDD mandatory)
-
-### 5.2 Prohibited Actions
-
-During migration tasks:
-- ❌ **No incremental migration from React prototypes** — React code is reference only, not source
-- ❌ **No copy-paste + syntax adaptation** — must rewrite in destination idioms
-- ❌ **No skipping tests** — TDD is mandatory for migrated business logic
-
-### 5.3 Migration Process Reference
-
-| Step | SDD Phase | Action |
-|------|-----------|--------|
-| 1. Explore | Explore | Separate business logic from framework plumbing |
-| 2. Design | Design | Map concepts using destination tables (§3 in code-migration.md) |
-| 3. Tasks | Tasks | Break migration into small, sequential tasks |
-| 4. Apply | Apply | Rewrite in destination + TDD (RED → GREEN → REFACTOR) |
-| 5. Verify | Verify | Confirm behavior parity with original |
-| 6. Archive | Archive | Commit with Conventional Commits, document in Bitacora.md |
-
----
-
-## 6. Bitacora Decision Logging
-
-### 6.1 Immediate Recording Requirement
-
-When a project decision is reached with the human collaborator, the agent MUST immediately append a new entry to `Bitacora.md` at the repository root. Do NOT batch entries or defer to session end.
-
-### 6.2 Entry Format
-
-Each entry MUST follow the Bitacora.md convention with date, context, decision, and motivation:
+Cuando tomes una decisión con el humano → REGISTRÁ en `Bitacora.md` INMEDIATAMENTE.
 
 ```markdown
-### YYYY-MM-DD — Brief Title
+### YYYY-MM-DD — Título
 
-**Context:** What was the situation or question?
-**Decision:** What was agreed or decided?
-**Motivation:** Why was this the right choice?
+**Context:** ...
+**Decision:** ...
+**Motivation:** ...
 ```
 
 ---
 
-*This document is consumed by AI agents. Human collaborators should refer to `.atl/governance/` for project rules.*
+*Para reglas del proyecto → `.atl/governance/`*

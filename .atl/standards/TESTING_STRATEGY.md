@@ -106,6 +106,20 @@ test('login flow', async ({ page }) => {
 *   Coverage thresholds are non-negotiable.
 *   Pipeline rejects PRs with coverage below threshold.
 
+### 6.3 TDD Batch Mode (All RED → All GREEN)
+
+*   **Concept:** Write ALL failing tests for the entire feature before writing ANY implementation code.
+*   **Workflow:**
+    1. **Analyze specs** → identify all test cases needed
+    2. **All RED** → write every test that should fail (no implementation yet)
+    3. **All GREEN** → implement code until all tests pass
+    4. **Refactor** → improve code while keeping tests green
+*   **Benefits:**
+    *   Ensures complete test coverage before implementation begins
+    *   Prevents "test after" syndrome where tests are written to match existing code
+    *   Forces clear understanding of requirements upfront
+*   **When to use:** Complex features, multiple interconnected tests, or batch SDD work
+
 ## 7. Batch-Verify Workflow
 
 ### 7.1 Single-Pass
@@ -117,6 +131,160 @@ test('login flow', async ({ page }) => {
 ### 7.2 Result
 *   Single pass/fail: either all pass (PASS) or change rejected (FAIL).
 *   Partial fixes not acceptable.
+
+## 8. Test Utilities & Patterns
+
+### 8.1 Clock Interface for Time-Dependent Logic
+
+*   **Problem:** Tests that depend on `time.Now()` or `time.Sleep()` are non-deterministic and hard to test.
+*   **Solution:** Inject a Clock interface instead of using system time directly.
+
+```go
+// domain/ports/clock.go
+package ports
+
+// Clock defines the interface for time operations.
+type Clock interface {
+    Now() time.Time
+    Since(t time.Time) time.Duration
+}
+
+// RealClock uses system time (default for production)
+type RealClock struct{}
+
+func (RealClock) Now() time.Time { return time.Now() }
+func (RealClock) Since(t time.Time) time.Duration { return time.Since(t) }
+
+// FixedClock returns a constant time (for testing)
+type FixedClock struct {
+    FixedTime time.Time
+}
+
+func (f FixedClock) Now() time.Time { return f.FixedTime }
+func (f FixedClock) Since(t time.Time) time.Duration { return f.FixedTime.Sub(t) }
+```
+
+*   **Usage in UseCase:**
+
+```go
+type TokenGenerator struct {
+    clock Clock
+}
+
+func NewTokenGenerator(opts ...Option) *TokenGenerator {
+    cfg := defaultConfig()
+    for _, o := range opts {
+        o(cfg)
+    }
+    return &TokenGenerator{clock: cfg.clock}
+}
+
+// Option pattern for configuration
+type Option func(*config)
+
+func WithClock(c Clock) Option {
+    return func(cfg *config) {
+        cfg.clock = c
+    }
+}
+```
+
+*   **Testing with FixedClock:**
+
+```go
+func TestTokenExpiry(t *testing.T) {
+    fixedTime := time.Date(2024, 1, 1, 12, 0, 0, 0, time.UTC)
+    generator := NewTokenGenerator(WithClock(FixedClock{FixedTime: fixedTime}))
+    // Test deterministic behavior
+}
+```
+
+### 8.2 Factory Functions with Functional Options Pattern
+
+*   **Problem:** Constructors with many parameters are hard to use and test.
+*   **Solution:** Use functional options for flexible, declarative configuration.
+
+```go
+type Config struct {
+    maxRetries  int
+    timeout     time.Duration
+    logger      Logger
+    cacheEnabled bool
+}
+
+// Default values
+func defaultConfig() Config {
+    return Config{
+        maxRetries:   3,
+        timeout:      30 * time.Second,
+        logger:       nil, // No logger by default
+        cacheEnabled: true,
+    }
+}
+
+// Functional options
+type Option func(*Config)
+
+func WithMaxRetries(n int) Option {
+    return func(c *Config) {
+        c.maxRetries = n
+    }
+}
+
+func WithTimeout(d time.Duration) Option {
+    return func(c *Config) {
+        c.timeout = d
+    }
+}
+
+func WithLogger(l Logger) Option {
+    return func(c *Config) {
+        c.logger = l
+    }
+}
+
+func WithCache(enabled bool) Option {
+    return func(c *Config) {
+        c.cacheEnabled = enabled
+    }
+}
+
+// Constructor with options
+func NewService(opts ...Option) *Service {
+    cfg := defaultConfig()
+    for _, opt := range opts {
+        opt(&cfg)
+    }
+    return &Service{
+        maxRetries:  cfg.maxRetries,
+        timeout:     cfg.timeout,
+        logger:      cfg.logger,
+        cache:       newCache(cfg.cacheEnabled),
+    }
+}
+```
+
+*   **Usage:**
+
+```go
+// Production: use defaults
+service := NewService()
+
+// Testing: override specific values
+mockLogger := &MockLogger{}
+service := NewService(
+    WithMaxRetries(1),
+    WithTimeout(5*time.Second),
+    WithLogger(mockLogger),
+    WithCache(false),
+)
+```
+
+*   **Benefits:**
+    *   No required parameters (all have sensible defaults)
+    *   Optional parameters are self-documenting
+    *   Easy to test: override only what you need
+    *   Backward compatible: add new options without breaking existing code
 
 ## 8. Golden Rules
 *   **Dependency Injection:** Required for testability.

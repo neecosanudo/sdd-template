@@ -1,301 +1,71 @@
-# Working Standard: Explore → Propose → Spec → Design → Tasks → Apply → Verify
+# Working Standard
 
-> **Purpose**: Document the working cycle that turns client conversations into working software. This standard applies to ALL projects using this template.
->
-> **Relationship to SDD**: This cycle maps to the Spec-Driven Development phases. SDD is the *methodology*; this is the *operational standard* for executing it.
+Ciclo operativo: cómo convertir conversaciones en software.
 
-## Overview
-
-The development cycle is:
+## Ciclo SDD
 
 ```
-Analysis → Design → Tasks → Apply → Verify (until OK) → Archive
+Explore → Propose → Spec → Design → Tasks → Apply → Verify → Archive
 ```
 
-**Critical rule**: Verification is NOT a one-time gate. If verification finds issues, you return to the appropriate earlier phase, fix, and re-verify. The cycle repeats until verification passes cleanly.
+**Regla clave:** Si Verify falla → volver a Tasks, NO a Design. Repetir hasta 100%.
 
 ---
 
-## Phase 1: Explore
+## Fases
 
-**What**: Understand the problem WITH the client before writing any code.
+### Explore
+Entender el problema CON el usuario.
+- Scope, requisitos, user stories, constraints
+- Output: `docs/` o `Bitacora.md`
 
-### Entry Criteria
-- [ ] A new project or significant feature is starting
-- [ ] Client/stakeholder is available for discussion
-- [ ] No existing analysis document covers this scope
+### Design
+Planificar la solución.
+- Arquitectura, modelo de datos, contratos API
+- Output: `docs/adr/NNNN-name.md`
 
-### Activities
-- Define project scope and boundaries
-- Gather functional requirements (what the system must do)
-- Gather non-functional requirements (performance, security, scale)
-- Identify stakeholders and user personas
-- Create user stories or use cases
-- Document constraints (budget, timeline, technology)
-- Document tool-specific patterns in `.atl/patterns/` when tools are selected
+### Tasks
+Descomponer en pasos concretos.
+- Cada tarea → completable en una sesión
+- Output: `tasks.md`
 
-### Special Case: Code Migration
+### Apply
+Escribir código.
+- Cargar skills relevantes ANTES
+- Si TDD strict → tests primero
+- Commands: `go test`, `npm run test`, lint
 
-When user says "I have code from X to bring into the project":
+### Verify
+Validar contra specs.
+- Tests pasan, no lint errors, no type errors
+- Si falla → volver a Tasks → Apply → Verify (loop automático)
 
-- **Identify** business logic to preserve vs framework code to discard
-- **Determine** destination tool (Go Hexagonal / SvelteKit / Godot)
-- **Reference** [`.atl/patterns/code-migration.md`](../patterns/code-migration.md) for 6-step SDD-aligned process
-- **Output**: Migration plan (preserve/discard/destination)
-
-### Initialization Command
-```bash
-# Initialize SDD in a new project
-sdd init
-```
-
-### Exit Criteria
-- [ ] Scope is documented and agreed upon
-- [ ] Requirements are captured in writing
-- [ ] User stories exist for the first milestone
-- [ ] Stakeholders have reviewed and approved
-
-### Responsibility
-- **Primary**: User (with client)
-- **Support**: Agent can facilitate with questions and templates (see `.atl/agent/AGENT_BEHAVIOR.md` for discovery phase awareness)
-
-### Output
-- `docs/` or `Bitacora.md` — analysis notes, user stories, requirements
+### Archive
+Cerrar el cambio.
+- Commit con Conventional Commits + Gitmoji
+- Git limpio
+- Informe final
 
 ---
 
-## Phase 2: Design
+## Reglas de Oro
 
-**What**: Plan the solution before implementing.
+1. **Análisis antes de Diseño** — nunca diseñues sin entender el problema
+2. **Diseño antes de Tasks** — nunca descompongas sin plan
+3. **Tasks antes de Apply** — nunca codifiques sin saber qué construís
+4. **Verify antes de Archive** — nunca cierres sin validar
+5. **Iterar hasta limpio** — un Verify fallido es feedback, no failure
 
-### Entry Criteria
-- [ ] Analysis phase exit criteria are met
-- [ ] Requirements are clear enough to design against
-
-### Activities
-- Architecture decisions (ADR if significant)
-- Data model design
-- Interface/API contracts (Swagger/OpenAPI)
-- Technology selection (document in STACK_MAP.md)
-- Sequence or flow diagrams for complex interactions
-
-### Exit Criteria
-- [ ] Design document exists
-- [ ] Architecture decisions are recorded (in `docs/adr/` or `DECISION_LOG.md`)
-- [ ] Interfaces/contracts are defined
-- [ ] Design is reviewed (self or peer)
-
-### Responsibility
-- **Primary**: Agent (proposes), User (confirms)
-
-### Output
-- `docs/adr/NNNN-name.md` — architectural decisions
-- Design documents in `docs/design/` or `openspec/changes/{change}/design.md`
+**Sync execution:** Las fases ejecutan sync, no async, salvo que el usuario pida lo contrario.
 
 ---
 
-## Phase 3: Tasks
+## Defaults
 
-**What**: Break the design into concrete, actionable steps.
-
-### Entry Criteria
-- [ ] Design phase exit criteria are met
-- [ ] Design is approved or agreed upon
-
-### Activities
-- Decompose design into implementation tasks
-- Estimate task size (completable in one session)
-- Identify dependencies between tasks
-- Group tasks into batches for apply-verify cycles
-
-### Exit Criteria
-- [ ] Task list exists with clear, specific items
-- [ ] Tasks are ordered by dependency
-- [ ] Each task is small enough for single-session completion
-- [ ] Verify criteria are defined for each batch
-
-### Responsibility
-- **Primary**: Agent (proposes), User (reviews)
-
-### Output
-- `tasks.md` or `openspec/changes/{change}/tasks.md`
+- **Persistence:** `engram`
+- **Flow:** `auto` → `interactive` antes de Archive
+- **Execution:** `synchronous`
 
 ---
 
-## Phase 4: Apply
-
-**What**: Write the code. Implement the tasks.
-
-### Entry Criteria
-- [ ] Task list exists and is approved
-- [ ] Design documents are accessible
-
-### Activities
-- Implement tasks in dependency order
-- Follow existing code patterns and conventions
-- Load relevant skills before coding (`go-testing`, `sdd-apply`)
-- Write tests FIRST if Strict TDD Mode is active
-
-### Commands
-```bash
-# Backend
-go fmt ./...
-go vet ./...
-go test ./... -v -cover -race
-
-# Frontend
-npm run test
-npm run lint
-
-# Docker
-docker compose up -d
-```
-
-### Exit Criteria
-- [ ] All tasks in the batch are implemented
-- [ ] Code follows project conventions
-- [ ] No obvious errors or omissions
-
-### Responsibility
-- **Primary**: Agent
-- **Support**: User provides clarification
-
-### Output
-- Modified/created source files
-- Tests (if applicable)
-
----
-
-## Phase 5: Verify
-
-**What**: Validate that implementation matches specs, design, and tasks.
-
-### Entry Criteria
-- [ ] Apply phase exit criteria are met
-- [ ] A batch of tasks is complete
-
-### Activities
-- Compare implementation against spec scenarios
-- Run tests if test infrastructure exists
-- Check for linting, type, or formatting errors
-- Review for consistency with design decisions
-
-### Tools
-```bash
-# Backend verification
-go vet ./...
-staticcheck ./...
-go test ./... -race
-
-# Frontend verification
-npm run lint
-npm run test
-npx playwright test
-
-# All
-go fmt ./...
-```
-
-### Exit Criteria
-- [ ] All spec scenarios are satisfied
-- [ ] Tests pass (if applicable)
-- [ ] No linting/type/formatting errors
-- [ ] No critical or warning-level issues
-
-### Iteration Rule (CRITICAL)
-If verification finds issues:
-
-```
-Verify fails
-    ↓
-Return to appropriate phase:
-    - Minor fix → Tasks (adjust task, re-apply)
-    - Design flaw → Design (update design, re-task, re-apply)
-    - Requirement misunderstanding → Analysis (re-analyze, redesign, etc.)
-    ↓
-Re-verify
-    ↓
-Still fails? Repeat until clean.
-```
-
-**You do NOT proceed to Archive until Verify passes cleanly.**
-
-### Responsibility
-- **Primary**: Agent (runs verification)
-- **Support**: User reviews results
-
-### Output
-- Verification report (`verify-report.md` or engram artifact)
-
----
-
-## Phase 6: Archive
-
-**What**: Close the change and persist final state.
-
-### Entry Criteria
-- [ ] Verify phase passed cleanly
-- [ ] All changes are committed (or ready to commit)
-
-### Activities
-- Move delta specs to main specs (if applicable)
-- Write final summary
-- Commit with Conventional Commits + Gitmoji
-
-### Commit Message Format
-```bash
-git commit -m "🎉 feat: add user authentication with JWT
-
-- Implement JWT middleware in backend
-- Add login/logout endpoints
-- Integrate with SvelteKit form actions
-- Add Playwright E2E tests for login flow"
-```
-
-### Exit Criteria
-- [ ] Change is archived
-- [ ] Git history is clean
-- [ ] Final state is documented
-
-### Responsibility
-- **Primary**: Agent
-- **Support**: User approves final commit
-
-### Output
-- Archive report
-- Git commit
-
----
-
-## SDD Phase Mapping
-
-Para definiciones canónicas de cada fase SDD, ver:
-
-📄 **[`../glossary.md`](../glossary.md)** — Tabla completa de fases, agentes y outputs
-
-**Nota**: El Working Standard desglosa "Analysis" en tres fases formales SDD: Explore, Propose, y Spec. SDD formaliza lo que el Working Standard llama "Analysis".
-
----
-
-## Golden Rules
-
-1. **Analysis before Design**: Never design without understanding the problem.
-2. **Design before Tasks**: Never break work down without a plan.
-3. **Tasks before Apply**: Never code without knowing what you're building.
-4. **Verify before Archive**: Never close a change without validation.
-5. **Iterate until clean**: One failed verify is not a failure — it's feedback. Fix and re-verify.
-
-**Synchronous Execution**: All SDD phases execute synchronously unless the user explicitly requests async. Tasks run sequentially — no background delegation, user sees progress in real-time.
-
----
-
-## Referencias
-
-- [STYLE_GUIDE.md](STYLE_GUIDE.md) — Code standards
-- [TESTING_STRATEGY.md](TESTING_STRATEGY.md) — Testing approach
-- [CICD_PIPELINE.md](CICD_PIPELINE.md) — CI/CD automation
-- [ENGINEERING_MANIFEST.md](../governance/ENGINEERING_MANIFEST.md) — Project governance
-
----
-
-*This standard is the operational backbone of the template. When in doubt, re-read it.*
+*Este es el ciclo operativo. Cuando dudas → releélo.*
