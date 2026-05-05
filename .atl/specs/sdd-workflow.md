@@ -1,13 +1,30 @@
 # SDD Workflow Specification
 
 **Document ID**: sdd-workflow
-**Version**: 1.1
+**Version**: 1.2
 **Status**: Active
 **Dependencies**: [.atl/agent/AGENT_BEHAVIOR.md](../agent/AGENT_BEHAVIOR.md), [.atl/ENTRY.md](../ENTRY.md)
 
 ---
 
-## 1. SDD Cycle Overview
+## 3 Etapas del Proyecto
+
+```
+Discovery → Pre-SDD → SDD循环
+```
+
+### Discovery (Análisis inicial)
+**Antes de cualquier código.** Definir visión, user personas, MVP scope, ciclos de entrega.
+
+### Pre-SDD (Preparación)
+**Antes de cada ciclo SDD.** Verificar historias de usuarios definidas y ciclos MVP completados.
+
+### SDD (Ciclo de desarrollo)
+**Las 7 fases formales.**
+
+---
+
+## SDD Cycle Overview
 
 ```
 Explore → Propose → Spec → Design → Tasks → Apply → Verify → Archive
@@ -15,90 +32,53 @@ Explore → Propose → Spec → Design → Tasks → Apply → Verify → Archi
                                               100% PASS required
 ```
 
-### Phase Descriptions
-
-| Phase | Purpose | Output |
-|-------|---------|--------|
-| **Explore** | Investigate the problem space | Investigation notes |
-| **Propose** | Define intent and approach | Change proposal |
-| **Spec** | Write requirements and scenarios | Delta specs |
-| **Design** | Define technical architecture | Design document |
-| **Tasks** | Break into actionable steps | Task checklist |
-| **Apply** | Implement tasks | Working code |
-| **Verify** | Validate against specs | 100% PASS report |
-| **Archive** | Close change, commit, report | Git clean |
-
 ---
 
-## 2. Automatic Verify Loop
-
-### If Verify Fails → Retake from Tasks (NOT Design)
-
-**Loop hasta 100%:**
+## Modo de Ejecución (Default)
 
 ```
-Tasks → Apply → Verify
-    ↑            ↓
-    ← FAIL ←─────
-    |
-    └── Fix tasks, re-apply, re-verify (max 3 attempts)
+[Interactive] → [Auto: Tasks→Apply→Verify] → [Interactive] → Archive
 ```
 
-**Process:**
-1. Verify falla → volver a Tasks
-2. Corregir/añadir tareas
-3. Re-apply → Re-verify
-4. Repetir hasta 100%
-5. Después de pasar → volver a `interactive` antes de Archive
+| Fases | Modo |
+|-------|------|
+| Explore → Design | `interactive` |
+| Tasks → Apply → Verify | `auto` (loop hasta 100%) |
+| Antes de Archive | `interactive` |
+
+**Override:** Usuario puede pedir otro modo por sesión.
 
 ---
 
-## 3. Default Modes (v2.1.0)
+## Automatic Verify Loop
 
-| Config | Default | Override |
-|--------|---------|----------|
-| **Persistence** | `engram` | `hybrid`, `openspec` si el usuario pide |
-| **Flow** | `auto` | `interactive` si el usuario pide |
-| **Execution** | `synchronous` | `async` si el usuario pide |
+```
+Tasks ──▶ Apply ──▶ Verify ──FAIL──▶ Tasks ──▶ Apply ──▶ Verify ──FAIL──▶ Tasks
+  ▲                                                                     │
+  │                                                                     │
+  └─────────────────────────── SUCCESS (100%) ◀────────────────────────┘
+```
 
-**Antes de Archive:** Siempre volver a `interactive` para confirmación.
-
----
-
-## 4. TDD Validation
-
-**Tests DEBEN tener assertions:**
-- Go: `assert`, `require`, `testing.Assert`
-- TS: `expect`, `assert`, `should`
-
-Si un test no tiene → **FAIL** → rechazar hasta que tenga lógica de validación.
+**Regla:** Si Verify falla → volver a Tasks (NO a Design).
+**Límite:** Max 3 intentos.
 
 ---
 
-## 5. Archive Closure Protocol
-
-Al final de Archive:
-
-1. `git add -A` — agregar todos los cambios
-2. Commit con Conventional Commits + Gitmoji
-3. `git status` — verificar que esté limpio
-4. Generar informe final del estado del proyecto
-
----
-
-## 6. Entry Point
+## Entry Point
 
 **El punto de entrada para agentes es `.atl/ENTRY.md`.**
-Allí está la navegación completa, modos de ejecución, y reglas.
+
+También ver `README.md` para el prompt de entrada que el usuario debe copiar y pegar al iniciar sesión.
 
 ---
 
-## 7. References
+## References
 
 - [.atl/ENTRY.md](../ENTRY.md) — Punto de entrada fijo
 - [.atl/agent/AGENT_BEHAVIOR.md](../agent/AGENT_BEHAVIOR.md)
 - [.atl/governance/ENGINEERING_MANIFEST.md](../governance/ENGINEERING_MANIFEST.md)
+- [.atl/standards/WORKING_STANDARD.md](../standards/WORKING_STANDARD.md)
 
 ---
 
-*SDD Workflow v1.1: Automatic, traceable, verifiable.*
+*SDD Workflow v1.2: 3 etapas + 7 fases.*

@@ -1,72 +1,113 @@
 # ENTRY.md — Punto de Entrada para Agentes
 
-> Este archivo es la **puerta de entrada obligatoria** para TODO agente orquestador que entre al proyecto.
+> Este archivo es la **puerta de entrada obligatoria** para TODO agente que entre al proyecto.
 
 ---
 
-## 🚀 Start Here
+## 🚨 Preguntas Iniciales (SIEMPRE hacer al empezar)
 
-1. **Primero que nada:** Leé este archivo completo
-2. **Luego:** Según tu tarea, dirigite a la sección correspondiente
-3. **Siempre:** Antes de escribir código, cargá los skills relevantes
+Antes de hacer cualquier cosa, respondé estas preguntas:
 
-### Modo de Ejecución Default
+1. **¿Qué es el proyecto y está definido?** — Si no hay visión/documento de Discovery, primero hay que hacer eso.
 
-| Config | Valor | Cuándo cambiar |
-|--------|-------|----------------|
-| **Persistence** | `engram` | Solo si el usuario pide `openspec` o `hybrid` |
-| **Flow** | `auto` | Volver a `interactive` antes de Archive |
-| **Execution** | `synchronous` | Solo si el usuario pide `async` |
+2. **¿Las historias de usuarios están definidas?** — Si no, el proyecto está en etapa de Discovery/MVP, no listo para SDD.
+
+3. **¿Los ciclos MVP están completos?** — Si hay ciclos MVP pendientes, completar esos primero antes de cambios nuevos.
+
+4. **¿Se tiene el contexto para planificar esta change?** — Si la respuesta es NO → volver a Discovery/Pre-SDD.
+
+**Si no sabés las respuestas → PREGUNTÁ al usuario. No asumas.**
 
 ---
 
-## 🔄 SDD Cycle
+## 🚀 Modo de Ejecución Default
+
+```
+[Interactive] → [Auto: Tasks→Apply→Verify] → [Interactive] → Archive
+```
+
+| Rango de fases | Modo | Comportamiento |
+|----------------|------|----------------|
+| Explore → Design | `interactive` | El agente pregunta, el usuario responde |
+| Tasks → Apply → Verify | `auto` | Ejecuta solo, loop automático hasta 100% |
+| Antes de Archive | `interactive` | Confirmación final antes de commit |
+
+**Override:** El usuario puede pedir "todo auto" o "todo interactive", pero solo para esa sesión. El default vuelve al formato mixto.
+
+---
+
+## 🔄 3 Etapas del Proyecto
+
+```
+Discovery → Pre-SDD → SDD循环
+```
+
+### Discovery (Análisis inicial)
+- Definir visión del proyecto
+- Identificar user personas
+- Definir MVP scope y ciclos de entrega
+- **Output:** Documento de Discovery en `docs/` o `Bitacora.md`
+
+### Pre-SDD (Preparación)
+- Antes de cada ciclo SDD
+- Verificar: historias de usuarios definidas, ciclos MVP completos
+- Si NO → volver a Discovery
+- Si SÍ → listo para SDD
+
+### SDD (Ciclo formal de desarrollo)
+- Las 7 fases formales
+
+---
+
+## 📋 SDD Cycle (7 Fases)
 
 ```
 Explore → Propose → Spec → Design → Tasks → Apply → Verify → Archive
 ```
 
-### Regla Clave
-**Si Verify falla → retoma desde Tasks (NO desde Design).**
-Repetí el loop Tasks → Apply → Verify automáticamente hasta 100%.
+### Ciclo Automático (desde Tasks hasta Verify)
 
-### Ciclo Automático
-- El agente ejecuta las fases en `auto` (sin preguntar entre cada fase)
-- Antes de Archive, volver a `interactive` para confirmación final
+```
+Tasks ──▶ Apply ──▶ Verify ──FAIL──▶ Tasks ──▶ Apply ──▶ Verify ──FAIL──▶ Tasks
+  ▲                                                                     │
+  │                                                                     │
+  └─────────────────────────── SUCCESS (100%) ◀────────────────────────┘
+```
+
+**Regla clave:** Si Verify falla → volver a Tasks (NO a Design). Repetir hasta 100%.
+
+**Límite:** Max 3 intentos. Si pasa de 3 → esperar intervención humana.
 
 ---
 
-## 📋 Rules
+## 📋 Rules (5 Reglas Críticas)
 
 ### Regla 1: Read-First
-Antes de modificar un archivo existente → LEELO primero.
-Antes de crear uno nuevo → VERIFICÁ que no exista.
+- Archivo existente → LEELO primero
+- Archivo nuevo → VERIFICÁ que no exista
 
 ### Regla 2: Load-Before-Code
-Si tu tarea coincide con un skill conocido, CARGÁ el skill ANTES de escribir código:
-- Go tests → `go-testing`
-- SDD phases → skill de la fase (sdd-apply, sdd-spec, etc.)
+- Go tests → `go-testing` skill
+- SDD phases → phase skill
 - Crear skills → `skill-creator`
 
 ### Regla 3: Patterns-Before-Code
-Antes de implementar algo nuevo → revisá `.atl/patterns/` por patrones aplicables.
-Si no existe → documentá uno nuevo antes de improvisar.
+- Antes de implementar → revisá `.atl/patterns/`
+- Si no existe → documentá uno nuevo
 
 ### Regla 4: TDD Validation
-Los tests DEBEN tener assertions.
-Si un test no tiene `assert`/`expect`/`reject` → es FAIL.
-El agente DEBE detectar esto y rechazarlo.
+- Tests DEBEN tener assertions
+- Si no tienen → RECHAZAR
 
 ### Regla 5: Cierre de Archive
-Al final de Archive, el agente DEBE:
-1. `git add -A` de todos los cambios
-2. Commit con Conventional Commits
-3. Verificar `git status` muestre limpio
-4. Generar informe final del proyecto
+1. `git add -A`
+2. Commit con Conventional Commits + Gitmoji
+3. `git status` → verificar limpio
+4. Generar informe final
 
 ---
 
-## 📂 Patterns
+## 📂 Patterns (Dónde buscar)
 
 | Si necesitás... | Buscá en... |
 |-----------------|------------|
@@ -82,8 +123,9 @@ Al final de Archive, el agente DEBE:
 
 | Archivo | Propósito |
 |---------|-----------|
+| `README.md` | Quick start + flujo de proyecto |
 | `.atl/agent/AGENT_BEHAVIOR.md` | Reglas de ejecución del agente |
-| `.atl/governance/ENGINEERING_MANIFEST.md` | Ley del proyecto (TDD, hexagonal, zero-tolerance) |
+| `.atl/governance/ENGINEERING_MANIFEST.md` | Ley del proyecto |
 | `.atl/standards/WORKING_STANDARD.md` | Ciclo operativo completo |
 | `.atl/specs/sdd-workflow.md` | Especificación del flujo SDD |
 | `.atl/standards/TESTING_STRATEGY.md` | Estrategia de testing |
@@ -94,10 +136,11 @@ Al final de Archive, el agente DEBE:
 ## 📖 Lectura Sugerida por Contexto
 
 ### Si acabás de entrar al proyecto
-→ Leé este ENTRY.md → luego `AGENT_BEHAVIOR.md` → luego `ENGINEERING_MANIFEST.md`
+→ Leé este ENTRY.md → luego `README.md` → luego `AGENT_BEHAVIOR.md`
 
 ### Si vas a hacer un cambio SDD
-→ Leé `WORKING_STANDARD.md` + `sdd-workflow.md` + los specs del cambio
+→ Verificá en qué etapa está el proyecto (Discovery? Pre-SDD? SDD?)
+→ Si está en Discovery/Pre-SDD, NO iniciés SDD sin completar esas etapas
 
 ### Si vas a escribir código Go
 → Leé `go-hexagonal.md` + cargá el skill `go-testing`
@@ -108,3 +151,4 @@ Al final de Archive, el agente DEBE:
 ---
 
 *Este archivo es el punto de referencia fijo. Si no sabés qué leer, empezá por acá.*
+*Si no sabás en qué etapa está el proyecto, PREGUNTÁ.*
