@@ -30,9 +30,9 @@
 
 ## Entradas
 
-### 2026-05-10 — template-v3-update: Template SDD actualizado a v3
+### 2026-05-10 — template-v0.3.0-update: Template SDD actualizado a v0.3.0
 
-**Contexto:** El template SDD estaba en versión 2.1.0 con estructura `.atl/`. El usuario solicitó una actualización mayor a v3 con nueva estructura en `docs/` y modo de persistencia engram-only.
+**Contexto:** El template SDD estaba en versión 2.1.0 con estructura `.atl/`. El usuario solicitó una actualización mayor a v0.3.0 con nueva estructura en `docs/` y modo de persistencia engram-only.
 **Decisión:** Se realizó una reescritura completa del template con los siguientes cambios:
 - Nueva estructura de docs en `docs/` (AGENT.md, CONTEXT.md, DISCOVERY.md, GOVERNANCE.md, STANDARDS.md)
 - Eliminación de la carpeta `.atl/` y archivos relacionados

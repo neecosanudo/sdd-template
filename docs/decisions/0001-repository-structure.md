@@ -1,6 +1,6 @@
 # ADR-0001: Estructura del Directorio `.atl/`
 
-> ⚠️ **SUPERSEDED**: This ADR referred to the `.atl/` directory structure which was replaced by `docs/` in v3.
+> ⚠️ **SUPERSEDED**: This ADR referred to the `.atl/` directory structure which was replaced by `docs/` in v0.3.0.
 
 **Estado**: Aprobado
 **Fecha**: 2026-04-29
