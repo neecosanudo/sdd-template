@@ -1,23 +1,29 @@
-.PHONY: up down test lint build migrate
+# Makefile — Template SDD
+# Customize these targets for your project's stack
 
+.PHONY: up down test lint build
+
+# levante del proyecto
 up:
+	@echo "Levantar servicios (personalizar para tu stack)"
 	docker compose up -d
 
+# apagado del proyecto
 down:
+	@echo "Apagar servicios"
 	docker compose down
 
+# ejecutar tests
 test:
-	go test ./... -count=1
+	@echo "Ejecutar tests (personalizar comando para tu stack)"
+	# go test ./... -count=1
 
+# linting
 lint:
-	go vet ./...
+	@echo "Ejecutar linter (personalizar para tu stack)"
+	# go vet ./...
 
+# build
 build:
-	go build -o bin/server ./cmd/server
-
-migrate:
-	golang-migrate -path ./migrations -database "postgres://..." up
-
-tools:
-	go install github.com/cosmtrek/air@latest
-	go install github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+	@echo "Compilar proyecto (personalizar para tu stack)"
+	# go build -o bin/server ./cmd/server

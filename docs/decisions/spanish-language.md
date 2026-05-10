@@ -112,7 +112,7 @@ type Usuario struct {
 ## 7. Referencias
 
 - [STACK_MAP.md](../STACK_MAP.md) — Stack principal
-- [ENGINEERING_MANIFEST.md](../../.atl/governance/ENGINEERING_MANIFEST.md) — Gobernanza
+- [ENGINEERING_MANIFEST.md](../../.atl/governance/ENGINEERING_MANIFEST.md) — Gobernanza (⚠️ superseded: contenido movido a docs/STANDARDS.md y docs/GOVERNANCE.md)
 
 ---
 

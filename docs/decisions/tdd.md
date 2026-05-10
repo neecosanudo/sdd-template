@@ -120,8 +120,8 @@ Criteria:
 ## 7. Referencias
 
 - [testing.md](../tools/testing.md) — Guía de herramientas
-- [TESTING_STRATEGY.md](../../.atl/standards/TESTING_STRATEGY.md) — Estrategia operativa
-- [ENGINEERING_MANIFEST.md](../../.atl/governance/ENGINEERING_MANIFEST.md) — Zero-tolerance enforcement
+- [TESTING_STRATEGY.md](../../.atl/standards/TESTING_STRATEGY.md) — Estrategia operativa (⚠️ superseded: contenido movido a docs/STANDARDS.md)
+- [ENGINEERING_MANIFEST.md](../../.atl/governance/ENGINEERING_MANIFEST.md) — Zero-tolerance enforcement (⚠️ superseded: contenido movido a docs/STANDARDS.md y docs/GOVERNANCE.md)
 
 ---
 

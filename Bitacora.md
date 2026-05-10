@@ -1,42 +1,57 @@
-# Bitacora — Conversation Log
+# Bitácora — Registro de Conversación
 
-> **Purpose**: Capture the ongoing dialogue between you (the user) and the AI agent. This is the *informal* history of your collaboration — decisions made, context shared, motivations explained.
+> **Propósito**: Capturar el diálogo continuo entre vos (el usuario) y el agente AI. Esta es la *historia informal* de su colaboración — decisiones tomadas, contexto compartido, motivaciones explicadas.
 >
-> **Why at root?** `Bitacora.md` lives at the repository root for immediate visibility as the conversation log. This is intentional — see `.atl/specs/navigation.spec.md` for the governance rationale.
+> **Por qué en la raíz?** `Bitácora.md` vive en la raíz del repositorio para visibilidad inmediata como registro de conversación. Esto es intencional — ver `docs/GOVERNANCE.md` para la justificación de gobernanza.
 >
-> **Difference from DECISION_LOG.md**: `DECISION_LOG.md` records formal architectural decisions with full rationale and consequences. `Bitacora.md` captures the *conversation* — the back-and-forth that led to those decisions. When a Bitacora entry becomes significant enough, it SHOULD be promoted to `DECISION_LOG.md`.
+> **Diferencia de DECISION_LOG.md**: `DECISION_LOG.md` registra decisiones arquitectónicas formales con racional completo y consecuencias. `Bitácora.md` captura la *conversación* — el ida y vuelta que llevó a esas decisiones. Cuando una entrada de Bitácora se vuelve significativa, DEBERÍA promoverse a `DECISION_LOG.md`.
 
-## How to Use This File
+## Cómo usar este archivo
 
-### Who writes here?
-- **Both user and agent**. The agent SHOULD log significant decisions after reaching agreement. The user MAY add context, corrections, or additional thoughts.
+### ¿Quién escribe aquí?
+- **Ambos usuario y agente**. El agente DEBERÍA registrar decisiones significativas después de llegar a un acuerdo. El usuario PUEDE agregar contexto, correcciones, o pensamientos adicionales.
 
-### When to write?
-- After any significant technical discussion
-- When requirements change or clarify
-- When constraints or assumptions are revealed
-- When the user says "remember this" or "note that"
+### ¿Cuándo escribir?
+- Después de cualquier discusión técnica significativa
+- Cuando los requisitos cambian o se aclaran
+- Cuando se revelan restricciones o suposiciones
+- Cuando el usuario dice "recuerda esto" o "anota esto"
 
-### Entry format
+### Formato de entrada
 
 ```markdown
-### YYYY-MM-DD — Brief Title
+### YYYY-MM-DD — Título Breve
 
-**Context:** What was the situation or question?
-**Decision:** What was agreed or decided?
-**Motivation:** Why was this the right choice?
-**Participants:** @user, @agent (optional)
+**Contexto:** ¿Cuál era la situación o pregunta?
+**Decisión:** ¿Qué se acordó o decidió?
+**Resultado:** ¿Por qué fue la elección correcta?
+**Participantes:** @usuario, @agente (opcional)
 ```
 
-## Entries
+## Entradas
 
-### 2026-04-27 — Project Discovery and Template Initialization
+### 2026-05-10 — template-v3-update: Template SDD actualizado a v3
 
-**Context:** The sdd-template was positioned only as an SDD framework. The user wants it to also serve as a project discovery tool for initial client dialogue.
-**Decision:** Strengthen the template with: comprehensive README (discovery + SDD), Bitacora.md for conversation logging, LEARNINGS_MAP.md for cross-project insights, and WORKING_STANDARD.md documenting the full analysis→design→tasks→apply→verify cycle.
-**Motivation:** A project doesn't start with code — it starts with understanding. The template should guide users through that understanding BEFORE entering the SDD cycle. This makes the template useful from day zero.
-**Participants:** @user, @agent
+**Contexto:** El template SDD estaba en versión 2.1.0 con estructura `.atl/`. El usuario solicitó una actualización mayor a v3 con nueva estructura en `docs/` y modo de persistencia engram-only.
+**Decisión:** Se realizó una reescritura completa del template con los siguientes cambios:
+- Nueva estructura de docs en `docs/` (AGENT.md, CONTEXT.md, DISCOVERY.md, GOVERNANCE.md, STANDARDS.md)
+- Eliminación de la carpeta `.atl/` y archivos relacionados
+- Actualización del README para reflejar la nueva estructura
+- Conversión de Bitácora.md a español (AR)
+- Creación de 5 documentos de patrones en `docs/patterns/`
+- Makefile genérico (sin hardcodeo de Go)
+**Resultado:** El template ahora es agnóstico del stack, compatible con cualquier tecnología, y documenta patrones comunes para Go, Docker, Git, Svelte y scope creep.
+**Participantes:** @usuario, @agente
 
 ---
 
-*Add new entries above this line. Keep the most recent entry at the top.*
+### 2026-04-27 — Descubrimiento del Proyecto e Inicialización del Template
+
+**Contexto:** El sdd-template estaba posicionado solo como un framework SDD. El usuario quiere que también sirva como herramienta de descubrimiento de proyectos para el diálogo inicial con clientes.
+**Decisión:** Fortalecer el template con: README comprehensivo (discovery + SDD), Bitácora.md para registro de conversación, STACK_MAP.md para insights cross-projects, y WORKING_STANDARD.md documentando el ciclo completo análisis→diseño→tareas→aplicación→verificación.
+**Resultado:** Un proyecto no empieza con código — empieza con comprensión. El template debe guiar a los usuarios a través de esa comprensión ANTES de entrar al ciclo SDD. Esto hace el template útil desde el día cero.
+**Participantes:** @usuario, @agente
+
+---
+
+*Agregar nuevas entradas arriba de esta línea. Mantener la entrada más reciente al tope.*

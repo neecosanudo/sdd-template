@@ -228,8 +228,8 @@ func main() {
 
 ## 7. Referencias
 
-- [go-hexagonal.md](../../.atl/patterns/go-hexagonal.md) — Patrón completo
-- [gorm-repository.md](../../.atl/patterns/gorm-repository.md) — Repository pattern
+- [go-hexagonal.md](../../.atl/patterns/go-hexagonal.md) — Patrón completo (⚠️ superseded: archivo eliminado en v3)
+- [gorm-repository.md](../../.atl/patterns/gorm-repository.md) — Repository pattern (⚠️ superseded: archivo eliminado en v3)
 - [gorm.md](../tools/gorm.md) — GORM con hexagonal
 
 ---
