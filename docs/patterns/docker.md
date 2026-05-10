@@ -1,287 +1,159 @@
-# Docker — Contenedores y Orquestación
+# Patrones y Conflictos — Docker
 
-**Imágenes Base**: Ver [STACK_MAP.md](../STACK_MAP.md)
-**Orquestación**: docker-compose
-**Referencias**: [STACK_MAP.md](../STACK_MAP.md) | [docker-multistage.md](../../.atl/patterns/docker-multistage.md) | [postgresql.md](postgresql.md)
+> Este archivo documenta comportamientos del entorno Docker que pueden generar errores difíciles de diagnosticar o pérdida de tiempo. Léelo antes de ejecutar comandos Docker en este proyecto.
 
 ---
 
-## 1. Docker Multi-Stage para Go Backend
+## 1. Volúmenes y Archivos Persistentes
 
-### Dockerfile Backend Completo
+### Problema
 
-```dockerfile
-# Etapa 1: Builder
-FROM golang:1.25-alpine3.21 AS builder
+Los volúmenes montados (`bind mounts`) persisten entre ejecuciones de contenedores. Archivos generados por el contenedor quedan en el host con permisos de **root**, lo que puede causar:
 
-# Instalar dependencias de build
-RUN apk add --no-cache git ca-certificates
+- Archivos no editables desde el host sin `sudo`
+- Estado corrupto de builds previas
+- El contenedor siguiente arranca con estado inconsistente
 
-WORKDIR /build
-
-# Copiar módulos
-COPY go.mod go.sum ./
-RUN go mod download
-
-# Copiar código
-COPY . .
-
-# Build binario
-RUN CGO_ENABLED=0 GOOS=linux go build \
-    -ldflags='-w -s' \
-    -o server \
-    ./cmd/main.go
-
-# Etapa 2: Runtime
-FROM alpine:3.21 AS runtime
-
-# Instalar certificados y usuario non-root
-RUN apk add --no-cache ca-certificates tzdata \
-    && addgroup -g 1000 app \
-    && adduser -u 1000 -G app -s /bin/sh -D app
-
-WORKDIR /home/app
-
-# Copiar binario y certificados
-COPY --from=builder /build/server .
-COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-
-# Usuario non-root
-USER app
-
-# Healthcheck
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1
-
-# Puerto y entrypoint
-EXPOSE 8080
-
-ENTRYPOINT ["./server"]
-```
-
-### .dockerignore (Backend)
-
-```
-# Archivos innecesarios
-.git
-.gitignore
-*.md
-docs/
-tests/
-*_test.go
-Makefile
-docker-compose.yml
-.env*
-```
-
----
-
-## 2. Dockerfile Frontend con Bun
-
-```dockerfile
-# Etapa 1: Builder
-FROM oven/bun:1-alpine AS builder
-
-WORKDIR /app
-
-# Copiar package files
-COPY package*.json ./
-
-# Instalar dependencias
-RUN bun install --frozen-lockfile
-
-# Copiar código
-COPY . .
-
-# Build
-RUN bun run build
-
-# Etapa 2: Runtime (serve estático)
-FROM alpine:3.21 AS runtime
-
-RUN apk add --no-cache nginx
-
-# Copiar build output
-COPY --from=builder /app/build /var/www/html
-COPY nginx.conf /etc/nginx/http.d/default.conf
-
-# Usuario non-root
-RUN addgroup -g 1000 app && \
-    adduser -u 1000 -G app -s /bin/sh -D app
-
-RUN chown -R app:app /var/www/html /etc/nginx/http.d
-USER app
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
-```
-
-### nginx.conf
-
-```nginx
-server {
-    listen 80;
-    root /var/www/html;
-    index index.html;
-
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
-}
-```
-
----
-
-## 3. docker-compose.yml
-
-```yaml
-services:
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: backend
-    ports:
-      - "8080:8080"
-    environment:
-      - DATABASE_URL=postgres://postgres:secret@postgres:5432/mydb?sslmode=disable
-      - JWT_SECRET=${JWT_SECRET}
-      - NODE_ENV=production
-    depends_on:
-      postgres:
-        condition: service_healthy
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
-
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: frontend
-    ports:
-      - "3000:80"
-    depends_on:
-      - backend
-    restart: unless-stopped
-
-  postgres:
-    image: postgres:16-alpine
-    container_name: postgres
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=secret
-      - POSTGRES_DB=mydb
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-volumes:
-  postgres_data:
-```
-
----
-
-## 4. Buenas Prácticas
-
-### Usuario Non-Root
-
-```dockerfile
-# Crear usuario antes de copiar código
-RUN addgroup -g 1000 app && \
-    adduser -u 1000 -G app -s /bin/sh -D app
-
-USER app  # Usar siempre el usuario no-root
-```
-
-### HEALTHCHECK
-
-```dockerfile
-# Backend (wget o curl)
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1
-
-# Postgres (pg_isready)
-healthcheck:
-  test: ["CMD-SHELL", "pg_isready -U postgres"]
-```
-
-### Multi-Stage
-
-```dockerfile
-# ✅ CORRECTO: Multi-stage reduce tamaño final
-FROM golang:1.25 AS builder
-# ... build ...
-
-FROM alpine:3.21 AS runtime
-# Solo el binario, no el toolchain
-
-# ❌ INCORRECTO: No usar golang:alpine como runtime
-FROM golang:1.25-alpine
-# Toolchain innecesario en producción
-```
-
-### Certificados CA
-
-```dockerfile
-# Instalar certificados para HTTPS
-RUN apk add --no-cache ca-certificates
-COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-```
-
----
-
-## 5. Comandos Esenciales
+### Síntomas típicos
 
 ```bash
-# Desarrollo
-docker compose up              # Crear y levantar
-docker compose up -d            # Detached mode
-docker compose logs -f backend  # Ver logs
+# Error común al querer limpiar desde el host
+$ rm -rf some-directory
+rm: cannot remove 'some-directory/...': Permission denied
 
-# Rebuild
-docker compose build            # Reconstruir imágenes
-docker compose build --no-cache # Sin cache
+# Build que falla de forma intermitente porque hay stale cache
+```
 
-# Limpieza
-docker compose down -v          # Detener y eliminar volúmenes
-docker compose down --rmi local # Eliminar imágenes locales
+### Solución
 
-# Debug
-docker compose exec backend sh  # Shell en contenedor
-docker compose ps              # Estado de contenedores
+```bash
+# Limpiar desde DENTRO del contenedor (tiene permisos de root)
+docker compose run --rm app rm -rf /app/some-directory
+
+# O desde el host con sudo (menos recomendado)
+sudo rm -rf some-directory
+```
+
+**Regla**: Siempre limpiar cache entre builds cuando cambien archivos de configuración o dependencias.
+
+---
+
+## 2. Ejecutar Comandos con `docker compose run`
+
+### Problema
+
+Usar `docker compose run --rm` ejecuta un comando dentro de un contenedor **nuevo**. Esto es diferente de `docker compose exec` que ejecuta en un contenedor en ejecución.
+
+### Cuándo usar cada uno
+
+| Comando | Cuándo usarlo |
+|:---|:---|
+| `docker compose run --rm app <cmd>` | Comandos únicos (build, install, lint, test) |
+| `docker compose exec app <cmd>` | Comandos contra el servicio en ejecución (dev server interactivo) |
+
+### Importante
+
+- `docker compose run` crea un contenedor temporal. Los archivos modificados en volúmenes montados persisten.
+- Siempre usar `--rm` para no dejar contenedores huérfanos.
+- El directorio de trabajo dentro del contenedor suele ser `/app`.
+
+```bash
+# Ejemplos comunes
+docker compose run --rm app go build ./...
+docker compose run --rm app go test ./...
+docker compose run --rm app rm -rf /app/some-cache
 ```
 
 ---
 
-## 6. Variables de Entorno
+## 3. Contenedores Huérfanos y `--rm`
 
-| Variable | Propósito | Ejemplo |
-|----------|-----------|---------|
-| `DATABASE_URL` | Connection string PostgreSQL | `postgres://user:pass@host:5432/db` |
-| `JWT_SECRET` | Secreto para JWT | `$(openssl rand -hex 32)` |
-| `PORT` | Puerto del servidor | `8080` |
+### Problema
+
+Si ejecutás `docker compose run` SIN la flag `--rm`, el contenedor persiste después de que el comando termina. Con el tiempo se acumulan contenedores "exited" que consumen espacio en disco.
+
+### Solución
+
+Siempre usar `--rm` con `docker compose run`:
+
+```bash
+# ✅ Correcto — el contenedor se elimina al terminar
+docker compose run --rm app go build ./...
+
+# ❌ Incorrecto — el contenedor queda en estado "exited"
+docker compose run app go build ./...
+```
+
+Para limpiar contenedores huérfanos existentes:
+
+```bash
+docker compose down --remove-orphans
+docker container prune -f
+```
 
 ---
 
-## 7. Referencias
+## 4. Docker Compose Override y Perfiles
 
-- [docker-multistage.md](../../.atl/patterns/docker-multistage.md) — Patrón completo
-- [postgresql.md](postgresql.md) — Configuración PostgreSQL
-- [STACK_MAP.md](../STACK_MAP.md) — Versiones de imágenes
+### Problema
+
+El proyecto puede tener múltiples servicios definidos en `docker-compose.yml`. Con `docker compose up` sin argumentos se levantan TODOS los servicios definidos, incluso los que no necesitás para una tarea específica.
+
+### Solución
+
+Usar servicios específicos:
+
+```bash
+# Levantar solo el servicio app (postgres se levantará por depends_on)
+docker compose up app
+
+# Build del app sin levantar servicios
+docker compose run --rm app go build ./...
+```
 
 ---
 
-*Docker multi-stage es obligatorio. El runtime NUNCA debe incluir el toolchain de build.*
+## 5. Problemas Comunes con docker-compose.yml de Este Proyecto
+
+### Servicios Definidos
+
+| Servicio | Imagen | Puerto | Props |
+|:---------|:-------|:-------|:------|
+| `postgres` | postgres:15-alpine | 5432 | Volumen persistente |
+| `app` | Dockerfile local | 8080 | Bind mount `/app` |
+
+### DATABASE_DSN en app
+
+El servicio `app` necesita la variable `DATABASE_DSN` para conectarse a PostgreSQL:
+
+```
+DATABASE_DSN=postgres://app:app@postgres:5432/app?sslmode=disable
+```
+
+- Host `postgres` es el nombre del servicio de base de datos
+- Puerto 5432 es el puerto interno del contenedor PostgreSQL
+- El puerto expuesto al host es 5432 (mapeado en docker-compose.yml)
+
+### Verificar que postgres está listo
+
+```bash
+# Esperar a que postgres responda
+docker compose exec postgres pg_isready -U app
+
+# Ver logs
+docker compose logs postgres
+```
+
+## 6. Documentación de Errores Conocidos
+
+| Error | Causa | Solución |
+|:---|:---|:---|
+| `Permission denied` al borrar archivos | Archivos creados por contenedor como root | Usar `docker compose run --rm app rm -rf ...` |
+| Build falla intermitentemente | Stale cache | Limpiar cache antes del build |
+| `orphan containers` warning | Contenedores de ejecuciones previas sin `--rm` | `docker compose down --remove-orphans` |
+| Postgres connection refused | PostgreSQL no está listo | Esperar con `pg_isready` o `sleep` |
+| `DATABASE_DSN` wrong | Host/port incorrectos | Verificar `postgres:5432` en la cadena de conexión |
+
+---
+
+> **Cómo actualizar este archivo**: Cuando encuentres un error de Docker que no está documentado aquí o un patrón que te hizo perder tiempo, agregalo. Especialmente errores relacionados con volúmenes, permisos, puertos o estado entre ejecuciones.

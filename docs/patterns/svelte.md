@@ -1,303 +1,483 @@
-# Patrón: Componentes Svelte
+# Patrones y Conflictos — Svelte / SvelteKit
 
-**Pattern ID**: svelte-component
-**Versión**: 1.0
-**dependencias**: [sveltekit.md](../../docs/tools/sveltekit.md) | [tailwindcss.md](../../docs/tools/tailwindcss.md) | [testing.md](../../docs/tools/testing.md)
+> Este archivo documenta comportamientos del framework que pueden generar errores silenciosos o difíciles de diagnosticar. Léelo antes de escribir código Svelte en este proyecto.
 
 ---
 
-## 1. Estructura de Componente
+## 1. Llaves `{}` en Contenido de Texto
+
+### Problema
+
+Svelte interpreta **cualquier `{...}` en cualquier texto del template** como una expresión de JavaScript. Esto incluye texto dentro de párrafos, atributos `alt`, slots de caption, etc.
 
 ```svelte
-<script lang="ts">
-    // Props con tipos
-    export let title: string;
-    export let count: number = 0;
-    export let items: string[] = [];
-    
-    // State reactivo (Svelte 4 syntax)
-    let value = 'initial';
-    
-    // Reactive statement
-    $: doubled = count * 2;
-    $: if (count > 10) console.warn('Count is high');
-    
-    // Event handlers
-    function handleClick() {
-        count += 1;
-    }
-    
-    function handleSubmit(e: Event) {
-        e.preventDefault();
-        // ...
-    }
-</script>
-
-<!-- Template con TailwindCSS -->
-<div class="p-4 bg-white rounded-lg shadow">
-    <h2 class="text-xl font-bold">{title}</h2>
-    
-    <p>Count: {count} (doubled: {doubled})</p>
-    
-    <ul class="mt-2 space-y-1">
-        {#each items as item, i}
-            <li>{i + 1}. {item}</li>
-        {/each}
-    </ul>
-    
-    <button 
-        on:click={handleClick}
-        class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-    >
-        Increment
-    </button>
-</div>
-
-<style>
-    /* Scoped styles - usar TailwindCSS primero */
-    /* .local-style { } */
-</style>
+<!-- Esto CRASHEA: Svelte busca variables `label` y `href` -->
+<Text type="caption">{label, href}</Text>
 ```
+
+### Solución
+
+Usar la sintaxis de **escape** `{'{...}'}`:
+
+```svelte
+<!-- Correcto: Svelte renderiza "{label, href}" como texto literal -->
+<Text type="caption">{'{label, href}'}</Text>
+```
+
+O asignar a una variable:
+
+```svelte
+<script>
+    const captionText = '{label, href}';
+</script>
+<Text type="caption">{captionText}</Text>
+```
+
+### Detección
+
+El error se manifiesta como `'text' is not defined` o `'level' is not defined` en la consola del navegador durante desarrollo. El compilador NO atrapa esto — solo aparece en runtime.
 
 ---
 
-## 2. Props Tipadas
+## 2. Props Faltantes en Componentes
 
-### Props Primitivas
+### Problema
 
-```svelte
-<script lang="ts">
-    export let name: string;
-    export let age: number;
-    export let active: boolean = false;
-</script>
-```
+Los componentes pueden no tener valores predeterminados para todas sus props. Si un componente se inserta sin una prop requerida, el valor será `undefined` y puede causar errores en runtime.
 
-### Props con Objetos
+### Solución
+
+Siempre definir valores por defecto con `export let`:
 
 ```svelte
-<script lang="ts">
-    interface User {
-        id: number;
-        name: string;
-        email: string;
-    }
-    
-    export let user: User;
-    export let onSave: (user: User) => void;
-</script>
-```
-
-### Validación de Props con Runtime
-
-```svelte
-<script lang="ts" context="module">
-    // Optional: schema validation with zod or similar
-</script>
-
-<script lang="ts">
-    import { onMount } from 'svelte';
-    
-    export let userId: number;
-    
-    // Validate at runtime
-    $: if (userId < 0) {
-        throw new Error('userId must be positive');
-    }
+<!-- Siempre con defaults -->
+<script>
+    export let items = [];
+    export let title = '';
+    export let variant = 'default';
 </script>
 ```
 
 ---
 
-## 3. Reactive Statements
+## 3. Eventos y `createEventDispatcher`
+
+### Problema
+
+Los componentes NO forwarding automático de eventos personalizados. Hay dos formas de escuchar eventos en un componente padre:
+
+- **Eventos del DOM nativo** (click, submit, etc.): el componente hijo debe tener `on:click` sin handler para forwardear. El padre usa `on:click={handler}`.
+- **Eventos personalizados** (search, pageChange, etc.): el componente hijo DEBE usar `createEventDispatcher` y llamar `dispatch('search', { value })`.
+
+### Confusión común: `on:action` vs `on:click`
 
 ```svelte
-<script lang="ts">
+<!-- EmptyState.svelte tiene on:click en su botón (forwarding DOM) -->
+<button on:click>{actionLabel}</button>
+
+<!-- El padre NO puede usar on:action — debe usar on:click -->
+<EmptyState on:click={handleClearFilters} />    <!-- ✅ Correcto -->
+<EmptyState on:action={handleClearFilters} />   <!-- ❌ No funciona -->
+```
+
+### Regla general
+
+| Tipo de evento | En hijo | En padre |
+|:---|:---|:---|
+| DOM nativo (click, submit) | `on:click` (sin handler) | `on:click={handler}` |
+| Personalizado (search, change) | `dispatch('search', data)` | `on:search={handler}` |
+
+---
+
+## 4. Reactividad con `$:`  vs Stores
+
+### Problema
+
+Usar `$page`, `$params`, `$data` de SvelteKit sin entender que son **stores** (no variables reactivas normales). Las stores usan `$` prefijo automático.
+
+```svelte
+<script>
+    import { page } from '$app/stores';
+    // ✅ Correcto: $page es el store suscrito automáticamente
+    $: activePath = $page.url.pathname;
+</script>
+```
+
+### NO mezclar con `$:` reactivo
+
+```svelte
+<script>
     let count = 0;
-    let doubled: number;
-    let quadrupled: number;
-    
-    // Simple reactive
-    $: doubled = count * 2;
-    
-    // Chain reactive
-    $: quadrupled = doubled * 2;
-    
-    // Conditional reactive
-    $: {
-        console.log('count changed:', count);
-        if (count > 100) {
-            alert('Count is very high!');
+    $: doubled = count * 2;  // ✅ Reactivo normal
+
+    import { page } from '$app/stores';
+    // $page es automágico — NO necesitas $: para suscribirte
+    console.log($page.url.pathname);  // ✅ Siempre actualizado
+</script>
+```
+
+---
+
+## 5. `$$restProps` y Fragmentación de Atributos
+
+### Problema
+
+Cuando un componente pasa atributos extra a un elemento interno con `{...$$restProps}`, esos atributos se aplican al elemento HTML. Si el componente renderiza múltiples elementos, `$$restProps` se aplica al PRIMERO.
+
+### Solución
+
+Usar `$$restProps` solo cuando el componente tiene un elemento raíz único. Para casos complejos, exponer props específicas.
+
+---
+
+## 6. SSR vs Cliente — Código Síncrono de Browser
+
+### Problema
+
+SvelteKit prerenderiza en Node.js. Código como `window.scrollY`, `document.title`, `navigator.clipboard` CRASHEA en SSR.
+
+### Solución
+
+```svelte
+<script>
+    import { onMount } from 'svelte';
+
+    let scrollY = 0;
+
+    onMount(() => {
+        // ✅ onMount solo se ejecuta en el cliente
+        scrollY = window.scrollY;
+    });
+</script>
+```
+
+---
+
+## 7. Documentación de Errores Conocidos (RunTime)
+
+| Error | Causa | Solución |
+|:---|:---|:---|
+| `'text' is not defined` | `{...}` interpretado como JS en texto | Escapar con `{'{...}'}` |
+| `'level' is not defined` | Lo mismo, otra variable | Escapar con `{'{...}'}` |
+| `'content' is not defined` | `{@html ...}` interpretado como directiva | Escapar con `{'{'}@html ...{'}'}` |
+| `500 favicon.ico` | Archivo favicon faltante o 0 bytes | Proveer SVG o PNG válido en `static/` |
+| `window is not defined` | Código browser en SSR | Mover a `onMount()` |
+| `Cannot read properties of undefined` | Prop faltante en componente | Agregar valor default `export let prop = defaultValue` |
+
+---
+
+## 8. Prerender y Errores 404 Durante Build
+
+### Problema
+
+SvelteKit en modo `adapter-static` prerenderiza TODAS las páginas. Si una página enlaza a otra que NO existe (porque no se creó aún o porque es un placeholder), el prerender CRASHEA la build con un error 404.
+
+Este proyecto usa `/showcase` como catálogo de componentes, y showcase enlaza a rutas como `/blog`, `/series`, `/contacto` que aún no existen. Esto rompe la build.
+
+### Solución
+
+Configurar `handleHttpError` en `svelte.config.js` para ignorar 404s de rutas conocidas que aún no existen:
+
+```js
+// svelte.config.js
+prerender: {
+    handleHttpError: ({ path }) => {
+        if (path.startsWith('/blog') || path.startsWith('/series') || path.startsWith('/contacto')) {
+            return; // Ignorar — rutas planificadas pero no implementadas
         }
+        throw new Error(`Prerender 404: ${path}`);
     }
+}
+```
+
+### handleMissingId
+
+Similarmente, si un link apunta a un ancla `#` que no existe en la página destino (ej: `#main-content` en una página sin ese id), SvelteKit falla con `handleMissingId`. Se puede configurar igual:
+
+```js
+prerender: {
+    handleMissingId: 'ignore' // o una función como handleHttpError
+}
+```
+
+---
+
+## 9. Directorios .bak como Rutas Válidas
+
+### Problema
+
+SvelteKit descubre rutas basándose en la estructura de directorios. **CUALQUIER** directorio con un archivo `+page.svelte` se convierte en una ruta, incluidos los directorios con extensión `.bak`, `.old`, `.backup`.
+
+```bash
+src/routes/
+├── blog/
+├── blog.bak/        # ← ESTO TAMBIÉN ES UNA RUTA: /blog.bak
+└── quien-es-neeco/
+```
+
+Si movés un directorio a `.bak` durante depuración, SvelteKit va a tratar de prerenderizar `/blog.bak` y todas sus subrutas. Si hay páginas que enlazan a ese path, aparecen errores confusos.
+
+### Solución
+
+- **NO** uses `.bak` para "desactivar" rutas. En su lugar:
+  - Eliminá el directorio temporalmente
+  - O movelo FUERA de `src/routes/` (ej: a `src/_archive/`)
+  - O usá `git stash` para volver atrás
+- Si necesitás archivos de respaldo, moveselos a una carpeta fuera de `src/routes/`
+
+---
+
+## 10. Múltiples Advertencias A11Y con `svelte-ignore`
+
+### Problema
+
+En Svelte 4, suprimir múltiples advertencias a11y con `svelte-ignore` puede no funcionar correctamente con el formato separado por espacios:
+
+```svelte
+<!-- ❌ Puede que NO suprima ambas advertencias -->
+<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
+<div on:click={handler}>...</div>
+```
+
+### Solución
+
+Usar `svelte-ignore` en líneas separadas:
+
+```svelte
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<div on:click={handler} on:keydown={handleKey}>...</div>
+```
+
+O mejor aún: agregar el manejador de teclado en lugar de ignorar la advertencia.
+
+---
+
+## 11. Documentación de Errores Conocidos (Build Time)
+
+Además de la tabla de runtime de la sección 7, estos errores aparecen en **build/compilación**:
+
+| Error | Causa | Solución |
+|:---|:---|:---|
+| `Prerender 404: /blog` | Link a ruta que no existe | Configurar `handleHttpError` o crear la ruta |
+| `handleMissingId: #main-content` | Link a ancla inexistente | Configurar `handleMissingId: 'ignore'` o agregar el id |
+| `ParseError: </div> attempted to close...` | Desbalance de tags en template | Revisar apertura/cierre de HTML en el componente |
+| Route `/blog.bak` discovered | Directorio `.bak` dentro de `src/routes/` | Mover respaldos fuera de `src/routes/` |
+| `Unexpected token` en `<script>` | Tipo TS sin `lang="ts"` en tag script | Agregar `lang="ts"` al tag `<script>` |
+| `'content' is not defined` | `{@html content}` en texto del template | Escapar: `{'{'}@html content{'}'}` |
+
+---
+
+## 12. `lang="ts"` Obligatorio en `<script>` con TypeScript
+
+### Problema
+
+Cualquier bloque `<script>` en un archivo `.svelte` que use sintaxis TypeScript (anotaciones de tipo, interfaces, genéricos, `ReturnType<>`, `as Type`, etc.) DEBE tener `lang="ts"`. Sin él, Vite/svelte-check lanza `Unexpected token` en la primera expresión TS.
+
+```svelte
+<!-- ❌ CRASHEA: type annotation sin lang="ts" -->
+<script>
+    let searchTimer: ReturnType<typeof setTimeout>;
+</script>
+
+<!-- ✅ Correcto -->
+<script lang="ts">
+    let searchTimer: ReturnType<typeof setTimeout>;
+</script>
+```
+
+### Detección
+
+El error aparece como `Pre-transform error: Unexpected token` en el compilador de Vite, apuntando a la línea del tipo. Es INMEDIATO — ni siquiera llega a la pantalla.
+
+### Regla simple
+
+**Si el `<script>` tiene DOS PUNTOS (`:`) en una declaración de variable, necesita `lang="ts"`.** No hay excepciones.
+
+---
+
+## 13. Escapar Directivas Svelte en Texto de Template
+
+### Problema
+
+Dentro del template HTML de un `.svelte`, las secuencias `{@...}`, `{#...}`, `{/:...}` se interpretan como **directivas Svelte**, no como texto literal. Si querés mostrarlas como documentación o descripción, Svelte intentará ejecutarlas y tirará errores como `'content' is not defined`.
+
+```svelte
+<!-- ❌ CRASHEA: Svelte interpreta {@html content} como directiva -->
+<Text>Elimina el {@html content} que era vector de XSS.</Text>
+
+<!-- ✅ Correcto: escapar las llaves -->
+<Text>Elimina el {'{'}@html content{'}'} que era vector de XSS.</Text>
+```
+
+### Qué secuelas escapar
+
+| Secuencia | Se escapa como | Se usa en |
+|:---|:---|:---|
+| `{@html ...}` | `{'{'}@html ...{'}'}` | Documentación de componentes |
+| `{#each ...}` | `{'{'}#each ...{'}'}` | Comentarios, docs |
+| `{#if ...}` | `{'{'}#if ...{'}'}` | Comentarios, docs |
+| `{:else}` | `{'{'}:else{'}'}`  | Comentarios, docs |
+| `{/if}` | `{'{'/if{'}'}` | Comentarios, docs |
+
+### Detección
+
+`vite-plugin-svelte` lanza: `'content' is not defined` o `'fallbackContent' is not defined`. Las "variables" que reporta son en realidad el texto que sigue a la directiva falsa.
+
+---
+
+## 14. Tipado de Props Arrays con TypeScript
+
+### Problema
+
+Svelte permite `export let items = []` sin tipo, lo que infiere `any[]`. Esto produce errores `Implicit any` en modo strict y puede causar errores en runtime.
+
+### Solución
+
+Usar anotaciones de tipo explícitas en todas las props de tipo array:
+
+```svelte
+<!-- ❌ Incorrecto: infiere any[] -->
+<script>
+    export let items = [];
+</script>
+
+<!-- ✅ Correcto: tipo explícito -->
+<script lang="ts">
+    export let items: string[] = [];
 </script>
 ```
 
 ---
 
-## 4. Form Actions con use:enhance
+## 15. Index Signatures con `as const`
 
-### Componente de Formulario
+### Problema
+
+Cuando un objeto de estilos/variantes se accede con bracket notation (`classes[variant]`), TypeScript requiere que el tipo del key sea exacto. Si el objeto tiene valores string genéricos, falla con:
+
+```
+Element implicitly has an 'any' type because index expression is not of type 'number'
+```
+
+### Solución
+
+Usar `as const` en el objeto para hacerlo `readonly` y narrows los tipos:
 
 ```svelte
-<!-- src/routes/users/+page.svelte -->
+<!-- ❌ Incorrecto: Record<string, string> falla con bracket notation -->
 <script lang="ts">
-    import { enhance } from '$app/forms';
-    import type { ActionData } from './$types';
-    
-    export let form: ActionData;
-</script>
-
-<form method="POST" use:enhance class="max-w-md mx-auto">
-    <div class="mb-4">
-        <label for="name" class="block text-sm font-medium">Name</label>
-        <input
-            type="text"
-            id="name"
-            name="name"
-            class="mt-1 block w-full rounded border-gray-300"
-            required
-        />
-    </div>
-    
-    {#if form?.error}
-        <p class="text-red-600 text-sm">{form.error}</p>
-    {/if}
-    
-    <button
-        type="submit"
-        class="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-    >
-        Create User
-    </button>
-</form>
-```
-
-### Server Action
-
-```typescript
-// src/routes/users/+page.server.ts
-import type { Actions } from './$types';
-import { fail } from '@sveltejs/kit';
-
-export const actions: Actions = {
-    default: async ({ request }) => {
-        const data = await request.formData();
-        const name = data.get('name') as string;
-        
-        if (!name || name.length < 2) {
-            return fail(400, { error: 'Name must be at least 2 characters' });
-        }
-        
-        // Create user logic...
-        await createUser({ name });
-        
-        return { success: true };
-    }
-};
-```
-
----
-
-## 5. Presentational vs Container Components
-
-### Presentational (UI-only)
-
-```svelte
-<!-- src/lib/components/UserCard.svelte -->
-<script lang="ts">
-    interface User {
-        id: number;
-        name: string;
-        email: string;
-    }
-    
-    export let user: User;
-    export let onEdit: (() => void) | undefined = undefined;
-</script>
-
-<div class="p-4 border rounded-lg">
-    <h3 class="font-semibold">{user.name}</h3>
-    <p class="text-gray-600">{user.email}</p>
-    
-    {#if onEdit}
-        <button 
-            on:click={onEdit}
-            class="mt-2 text-blue-500 hover:underline"
-        >
-            Edit
-        </button>
-    {/if}
-</div>
-```
-
-### Container (con datos)
-
-```svelte
-<!-- src/routes/users/+page.svelte -->
-<script lang="ts">
-    import UserCard from '$lib/components/UserCard.svelte';
-    import type { PageData } from './$types';
-    
-    export let data: PageData;
-    
-    function handleEdit(userId: number) {
-        // Navigate or open modal
-    }
-</script>
-
-<div class="grid gap-4 md:grid-cols-2">
-    {#each data.users as user}
-        <UserCard 
-            {user} 
-            onEdit={() => handleEdit(user.id)} 
-        />
-    {/each}
-</div>
-```
-
----
-
-## 6. Testing de Componentes
-
-```typescript
-// src/lib/components/UserCard.test.ts
-import { render, screen } from '@testing-library/svelte';
-import { describe, it, expect, vi } from 'vitest';
-import UserCard from './UserCard.svelte';
-
-describe('UserCard', () => {
-    const mockUser = {
-        id: 1,
-        name: 'John Doe',
-        email: 'john@example.com'
+    const variantClasses = {
+        accent: 'bg-[var(--color-accent)]',
+        clay: 'bg-[var(--color-clay)]'
     };
-    
-    it('renders user information', () => {
-        render(UserCard, { props: { user: mockUser } });
-        
-        expect(screen.getByText('John Doe')).toBeInTheDocument();
-        expect(screen.getByText('john@example.com')).toBeInTheDocument();
-    });
-    
-    it('shows edit button when onEdit is provided', () => {
-        const onEdit = vi.fn();
-        render(UserCard, { props: { user: mockUser, onEdit } });
-        
-        const button = screen.getByRole('button', { name: /edit/i });
-        expect(button).toBeInTheDocument();
-    });
-});
+    // variantClasses[variant] → Error: no index signature
+</script>
+
+<!-- ✅ Correcto: as const narrows los keys -->
+<script lang="ts">
+    const variantClasses = {
+        accent: 'bg-[var(--color-accent)]',
+        clay: 'bg-[var(--color-clay)]',
+        outline: 'bg-transparent border border-[var(--color-accent)]'
+    } as const;
+
+    export let variant: 'accent' | 'clay' | 'outline' = 'accent';
+</script>
+
+<span class={variantClasses[variant]}>...</span>
 ```
 
 ---
 
-## 7. Referencias
+## 16. Tipado de Event Handlers
 
-- [sveltekit.md](../../docs/tools/sveltekit.md) — SvelteKit completo
-- [tailwindcss.md](../../docs/tools/tailwindcss.md) — Utility-first CSS
-- [testing.md](../../docs/tools/testing.md) — Testing con Vitest
+### Problema
+
+Sin tipo, el parámetro `e` en un event handler es `any`. Esto pierde la guía de tipos para `e.target`, `e.preventDefault()`, etc.
+
+### Solución
+
+Tipar el parámetro con el tipo de evento correspondiente:
+
+```svelte
+<!-- ❌ Incorrecto: any implícito -->
+<script>
+    function handleClick(e) {
+        e.preventDefault(); // any - sin autocompletado
+    }
+</script>
+
+<!-- ✅ Correcto: MouseEvent -->
+<script lang="ts">
+    function handleClick(e: MouseEvent) {
+        e.preventDefault();
+        // e.target es HTMLElement
+    }
+</script>
+```
+
+### Tipos comunes
+
+| Evento | Tipo | Uso |
+|:---|:---|:---|
+| click en elemento | `MouseEvent` | Botones, links |
+| submit de form | `SubmitEvent` | Forms |
+| input en campo | `Event` + cast | Inputs, textareas |
+| keydown/keyup | `KeyboardEvent` | Navegación de teclado |
+| change | `Event` | Selects, checkboxes |
 
 ---
 
-*Svelte 4 syntax (no runes). Props tipadas, reactive statements, scoped styles.*
+## 17. PageData en Tests de Ruta
+
+### Problema
+
+Los tests de rutas SvelteKit usan `load()` que devuelve datos tipados. Sin tipo, se usa `as any` que pierde toda la verificación.
+
+### Solución
+
+Importar `PageData` desde `$types` y usarlo para tipar el resultado:
+
+```typescript
+// ❌ Incorrecto: any
+const result = await load({ fetch: global.fetch } as any);
+
+// ✅ Correcto: PageData tipado
+import type { PageData } from './$types';
+const result = (await load({ fetch: global.fetch } as any)) as PageData;
+```
+
+---
+
+## 18. Prefijo `+` Reservado en Archivos de Test dentro de `src/routes/`
+
+### Problema
+
+SvelteKit reserva el prefiio `+` exclusivamente para archivos de ruta especiales: `+page.svelte`, `+layout.svelte`, `+error.svelte`, `+page.ts`, `+page.server.ts`, etc. Si un archivo de test dentro de `src/routes/` usa el prefiio `+` (por ejemplo, `+page.test.ts`), SvelteKit lo detecta como un archivo de ruta inválido y **tira error 500 en TODO el sitio**.
+
+```bash
+src/routes/admin/posts/[id]/
+├── +page.svelte          # ✅ Ruta válida
+├── +page.test.ts         # ❌ ¡INVÁLIDO! Causa: "Files prefixed with + are reserved"
+└── page.test.ts          # ✅ Correcto — test sin prefijo +
+```
+
+### Impacto
+
+- El sitio completo devuelve HTTP 500
+- El mensaje de error es: `"Files prefixed with + are reserved (saw src/routes/.../+page.test.ts)"`
+- No es un error aislado de la ruta — afecta todas las páginas
+
+### Solución
+
+**NUNCA uses `+` en archivos de test dentro de `src/routes/`:**
+
+| ❌ Incorrecto | ✅ Correcto |
+|:---|:---|
+| `src/routes/blog/+page.test.ts` | `src/routes/blog/page.test.ts` |
+| `src/routes/admin/posts/[id]/+page.test.ts` | `src/routes/admin/posts/[id]/page.test.ts` |
+
+---
+
+> **Cómo actualizar este archivo**: Cuando encuentres un error de framework que no está documentado aquí, agregalo. No importa si parece obvio — lo que es obvio hoy se olvida mañana.
