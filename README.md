@@ -1,4 +1,4 @@
-# Template SDD v0.3.0
+# Template SDD v0.4.0
 
 Template genérico para proyectos Spec-Driven Development (SDD).
 
