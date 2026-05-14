@@ -12,4 +12,4 @@ Adoptamos el formato de **Architecture Decision Records (ADR)** para cualquier d
 ## Consecuencias
 *   **Positivas:** Transparencia, trazabilidad histórica y consistencia en el desarrollo con agentes.
 *   **Negativas:** Requiere un pequeño esfuerzo extra de documentación antes de la implementación.
-*   **Neutrales:** Los archivos residirán en `/docs/adr/`.
+*   **Neutrales:** Los archivos residirán en `/docs/decisions/`.

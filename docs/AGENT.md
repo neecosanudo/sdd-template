@@ -56,13 +56,21 @@ Fases flexibles que se eligen según el tamaño y tipo de proyecto:
 | **Ruta** | ¿Cómo llegamos? Roadmap, fases | Proyectos > 1 semana |
 | **Check** | ¿Estamos listos para codear? | Proyectos con incertidumbre |
 
-### Fases según tipo de cambio
+### Secuencia de Agentes por Tipo de Cambio
 
-| Tipo de cambio | Fases |
-|----------------|-------|
-| **Nuevo comportamiento** (features, funcionalidad nueva) | Explore → Propose → Spec → Design (si aplica) → Tasks → Apply → Verify → Archive |
-| **Cambio mecánico** (CSS, mover código, refactor sin cambio de comportamiento) | Explore → Propose → Tasks → Apply → Verify → Archive |
-| **Incertidumbre técnica** (no sabemos cómo hacerlo) | Explore primero, luego resto según corresponda |
+En lugar de hacer correcciones inline o elegir manualmente qué agentes usar, seguí esta tabla según el tipo de trabajo:
+
+| Tipo de cambio | Descripción | Secuencia de Agentes | Cuándo |
+|----------------|-------------|---------------------|--------|
+| **Micro-fix** | < 10 líneas, obvio (typo, valor incorrecto) | Tasks (orquestador define) → Apply → [Docs update si aplica] | User dice "fijate X" y es trivial |
+| **Cambio mecánico** | 1-2 archivos, sin cambio de comportamiento | Tasks → Apply → Verify → Archive | CSS, rename, refactor sin lógica nueva |
+| **Solo documentación** | Actualizar docs, sin código | Tasks → Apply → Archive | README, patrones, standards |
+| **Feature / Fix estándar** | Cambio con lógica nueva | Explore → Propose → Spec → Design (si aplica) → Tasks → Apply → Verify → Archive | La mayoría del trabajo |
+| **Cambio grande** | > 400 líneas estimadas | Ciclo estándar + PRs encadenados con feature-branch-chain | Features complejas, refactors grandes |
+| **Usuario ya especificó** | El usuario dio la solución completa | Tasks → Apply → Verify → Archive | User describe exactamente qué hacer |
+| **Incertidumbre técnica** | No sabemos cómo encararlo | Explore primero, luego el resto según hallazgos | Features con riesgo técnico |
+
+**Regla de oro: NUNCA edites archivos directamente.** Siempre usá la secuencia de agentes correspondiente. No hay excepción por tamaño del cambio.
 
 ## 2. Verify Loop Protocol (CRITICAL)
 
@@ -99,13 +107,6 @@ Archive     ─── Volver a Explore (NUEVO Explore, no reusar el anterior)
 - Direct execution — complete tasks yourself
 - Single-threaded unless explicitly requested otherwise
 
-### Orchestrator Inline Correction Ban
-
-- El orquestador NUNCA hace correcciones inline
-- Cualquier error descubierto en verificación o runtime → Explore → Tasks → Apply → Verify
-- Si el cambio era parte de un ciclo abierto → Archive después de verify clean
-- No hay excepción por tamaño del cambio
-
 ### Load-Before-Code Rule
 Before writing any code:
 1. Identify relevant skills from trigger matching
@@ -119,6 +120,23 @@ Before writing any code:
 ### Verify-After-Write Rule
 - Run relevant verification after writing
 - Confirm file creation via `git status` or `ls`
+
+### 3.5 Sub-Agent Delegation Context
+
+Antes de delegar a cualquier sub-agente, el orquestador DEBE explicar:
+
+**Pre-launch (por qué este agente y qué espero):**
+- ¿Por qué elegí este tipo de agente y no otro?
+- ¿Qué tarea específica va a realizar?
+- ¿Qué contexto necesita saber para hacerla bien?
+- Ser específico: "Lanzo un Explore para verificar si este error es algo solo de este archivo o se repite en varios."
+
+**Post-result (qué encontró):**
+- ¿Qué descubrió el agente?
+- ¿Hay hallazgos que afecten los próximos pasos?
+- Ser específico: "Durante el Explore se encontró una dependencia con versión incompatible, el rastro ocurre en los archivos X, Y, Z."
+
+Esto NO cambia la lógica de delegación — es un protocolo de COMUNICACIÓN para que el usuario pueda seguir el proyecto y aprender cosas que quizás no sabía.
 
 ## 4. Batch-Verify
 
@@ -157,7 +175,70 @@ Single pass/fail — no partial success:
 
 **Esto previene perdida de contexto entre ciclos.** No empezar un ciclo sin este refresh.
 
-## 7. Tasks→Apply Handoff Rule
+## 7. Project Context Template
+
+### ¿Qué es este proyecto?
+
+[TODO: Descripción de una línea]
+
+[DESCRIPCIÓN DETALLADA: Propósito, problema que resuelve, usuarios]
+
+### Stack Tecnológico
+
+| Capa | Tecnología | Detalle |
+|------|-----------|---------|
+| **Backend** | [TODO] | [TODO] |
+| **Frontend** | [TODO] | [TODO] |
+| **Base de Datos** | [TODO] | [TODO] |
+| **Infra** | [TODO] | [TODO] |
+
+### Branch Strategy
+
+- `main` → producción versionada
+- `dev` → integración
+- `feature/<name>` → cada ciclo SDD
+- Archive → squash merge 1 commit a `dev`
+
+### Estado Actual del Proyecto
+
+#### Completado
+
+| Ciclo | Cambio | Rama | Archivos |
+|-------|--------|------|----------|
+| [TODO] | [TODO] | [TODO] | [TODO] |
+
+#### Pendiente
+
+| Ciclo | Cambio | Depende de |
+|-------|--------|-----------|
+| [TODO] | [TODO] | [TODO] |
+
+## 8. Governance
+
+### Language
+**Spanish (AR)**. Docs, commits, comments en español. Términos técnicos en inglés.
+
+### Commit Conventions
+Formato: `:emoji: type(scope): description`
+
+| Type | Emoji | Descripción |
+|------|-------|-------------|
+| `feat` | :sparkles: | Nueva funcionalidad |
+| `fix` | :bug: | Corrección |
+| `docs` | :memo: | Documentación |
+| `refactor` | :recycle: | Refactor |
+| `test` | :white_check_mark: | Tests |
+| `chore` | :wrench: | Config/build |
+
+No AI attribution (prohibido Co-Authored-By). Descripciones en español.
+
+### Versioning
+**SemVer 2.0.0:** MAJOR (breaking) . MINOR (features) . PATCH (fixes)
+
+### ADR System
+Decisiones arquitectónicas en `docs/decisions/NNNN-name.md`. Cambios estructurales requieren ADR antes de implementar.
+
+## 9. Tasks→Apply Handoff Rule
 
 **CRITICAL:** El orquestador genera las Tasks, y el sub-agente Apply las recibe DIRECTAMENTE.
 
@@ -168,32 +249,7 @@ El sub-agente Apply NO debe regenerar, reinterpretar, ni crear nuevas tasks. Su 
 
 **Anti-patron:** El orquestador hizo las tasks → el agente Apply las ignora y crea sus propias tasks. Esto rompe la trazabilidad entre Spec→Tasks→Verify.
 
-## 7.5 Micro-Fix Protocol
-
-Para arreglos MUY chicos (typos, una linea, un valor incorrecto):
-
-**NUNCA hacer arreglos inline.** Siempre usar sub-agentes.
-
-En vez del ciclo SDD completo (8 fases), usar ciclo minimo:
-
-```
-Tasks → Apply → [Docs update si aplica]
-```
-
-- **Tasks**: El orquestador define UNA task concreta y la pasa al sub-agente Apply
-- **Apply**: El sub-agente implementa el fix y reporta
-- **Docs update** (opcional): Si durante el fix se descubre algo util para la documentacion, el agente Apply lo reporta y se actualiza
-
-**Reglas:**
-- Solo para cambios de < 10 lineas
-- Solo para fixes obvios (no requieren Explore, Spec, Design, Verify)
-- Si el fix requiere mas de 1 intento → escalar a ciclo SDD completo
-- Si se descubre algo inesperado → documentar en Bitacora.md
-- El sub-agente Apply siempre reporta: "Esto fue un micro-fix. [cambios hechos]. [descubrimientos, si los hay]"
-
-**Anti-patron:** El orquestador edita inline porque "es muy chico". Siempre hay un sub-agente para eso. Tasks→Apply son 2 llamadas, toman segundos, y mantienen la trazabilidad.
-
-## 8. SDD Phase Skills Table
+## 10. SDD Phase Skills Table
 
 | Context | Skill |
 |---------|-------|
@@ -205,7 +261,7 @@ Tasks → Apply → [Docs update si aplica]
 | Creating AI skills | `skill-creator` |
 | SDD phases | Phase-specific SDD skill |
 
-## 8.1 Session Close Protocol — Handoff Ready
+## 11. Session Close Protocol — Handoff Ready
 
 Al FINAL de cada sesión, antes de decir "listo" o "terminado":
 
@@ -219,7 +275,7 @@ Al FINAL de cada sesión, antes de decir "listo" o "terminado":
 3. **No dejar preguntas abiertas**: Si hay decisiones pendientes, documentarlas en el prompt de handoff.
 4. **Engram como fuente de verdad**: El session summary en Engram es el respaldo.
 
-## 9. Delivery Strategy
+## 12. Delivery Strategy
 
 **División en PRs.** Cada ciclo SDD produce UN PR. Si el cambio es grande (>400 líneas), se divide en PRs encadenados para proteger la revisión.
 
