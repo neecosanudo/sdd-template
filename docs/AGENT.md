@@ -33,16 +33,36 @@ Explore → Propose → Spec → Design → Tasks → Apply → Verify → Archi
                                            └───────────────────────┘
 ```
 
-| Phase | Entry Criteria | Activities | Exit Criteria |
-|-------|---------------|------------|---------------|
-| Explore | Problem statement | Investigate, analyze | Scope documented |
-| Propose | Explore output | Intent + approach | Change proposal approved |
-| Spec | Proposal approved | Requirements + scenarios | Specs signed off |
-| Design | Spec complete | Architecture + patterns | Design reviewed |
-| Tasks | Design approved | Decompose to actionable | Task list complete |
-| Apply | Tasks approved | Implement code | Code complete |
-| Verify | Apply complete | Validate against spec | Clean verify |
-| Archive | Verify passed | Persist final state | Change closed |
+| Phase | Mode | Entry Criteria | Activities | Exit Criteria |
+|-------|------|---------------|------------|---------------|
+| Explore | Interactive | Problem statement | Investigate, analyze | Scope documented |
+| Propose | Interactive | Explore output | Intent + approach | Change proposal approved |
+| Spec | Interactive | Proposal approved | Requirements + scenarios | Specs signed off |
+| Design | Interactive | Spec complete | Architecture + patterns | Design reviewed |
+| Tasks | Auto | Design + Spec approved | Decompose to actionable | Task list complete |
+| Apply | Auto | Tasks approved | Implement code | Code complete |
+| Verify | Auto | Apply complete | Validate against spec | Clean verify |
+| Archive | Interactive | Verify passed | Persist final state | Change closed |
+
+### Fases Pre-SDD
+
+Fases flexibles que se eligen según el tamaño y tipo de proyecto:
+
+| Fase | Qué responde | Para qué proyectos |
+|------|-------------|-------------------|
+| **Visión** | ¿Qué hacemos y para quién? | Todos |
+| **Análisis** | ¿Qué hay ya? (código existente) | Migraciones, refactors |
+| **Arquitectura** | ¿A dónde vamos? Stack, estructura | Proyectos con definición técnica |
+| **Ruta** | ¿Cómo llegamos? Roadmap, fases | Proyectos > 1 semana |
+| **Check** | ¿Estamos listos para codear? | Proyectos con incertidumbre |
+
+### Fases según tipo de cambio
+
+| Tipo de cambio | Fases |
+|----------------|-------|
+| **Nuevo comportamiento** (features, funcionalidad nueva) | Explore → Propose → Spec → Design (si aplica) → Tasks → Apply → Verify → Archive |
+| **Cambio mecánico** (CSS, mover código, refactor sin cambio de comportamiento) | Explore → Propose → Tasks → Apply → Verify → Archive |
+| **Incertidumbre técnica** (no sabemos cómo hacerlo) | Explore primero, luego resto según corresponda |
 
 ## 2. Verify Loop Protocol (CRITICAL)
 
@@ -78,6 +98,13 @@ Archive     ─── Volver a Explore (NUEVO Explore, no reusar el anterior)
 - Executors do NOT spawn sub-agents or delegate work
 - Direct execution — complete tasks yourself
 - Single-threaded unless explicitly requested otherwise
+
+### Orchestrator Inline Correction Ban
+
+- El orquestador NUNCA hace correcciones inline
+- Cualquier error descubierto en verificación o runtime → Explore → Tasks → Apply → Verify
+- Si el cambio era parte de un ciclo abierto → Archive después de verify clean
+- No hay excepción por tamaño del cambio
 
 ### Load-Before-Code Rule
 Before writing any code:
@@ -170,10 +197,31 @@ Tasks → Apply → [Docs update si aplica]
 
 | Context | Skill |
 |---------|-------|
-| Go testing | `go-testing` |
+| Go | `go-testing` + patterns |
+| TypeScript | `typescript` patterns |
+| CSS / Tailwind | Tailwind patterns |
+| Docker | Docker patterns |
+| Frontend framework | Project-specific patterns |
 | Creating AI skills | `skill-creator` |
 | SDD phases | Phase-specific SDD skill |
-| Analysis phase | WORKING_STANDARD.md (Analysis section) |
+
+## 8.1 Session Close Protocol — Handoff Ready
+
+Al FINAL de cada sesión, antes de decir "listo" o "terminado":
+
+1. **Session summary en Engram**: Llamar `mem_session_summary` con formato: Goal, Instructions, Discoveries, Accomplished, Next Steps, Relevant Files.
+2. **Prompt de handoff**: Escribir en el chat un prompt completo para la próxima sesión que incluya:
+   - Archivos a leer (lista completa)
+   - Estado actual del proyecto (versión, ciclo)
+   - Defaults de sesión (modo, artifact store, delivery, etc.)
+   - Instrucciones específicas de lo que NO preguntar porque ya está definido en docs
+   - Comando exacto para arrancar (ej: `/sdd-new nombre-del-proximo-cambio`)
+3. **No dejar preguntas abiertas**: Si hay decisiones pendientes, documentarlas en el prompt de handoff.
+4. **Engram como fuente de verdad**: El session summary en Engram es el respaldo.
+
+## 9. Delivery Strategy
+
+**División en PRs.** Cada ciclo SDD produce UN PR. Si el cambio es grande (>400 líneas), se divide en PRs encadenados para proteger la revisión.
 
 ---
 
